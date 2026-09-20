@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maggie's Collection — women's fashion in Kimana Town</title>
+<meta name="description" content="Dresses, tops, Ankara, bags and shoes picked by hand in Kimana Town. Free alterations, delivery across Oloitokitok and Kajiado, order on WhatsApp.">
+<meta name="theme-color" content="#FDF8F3">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+
+</head>
+<body>
+<a class="skip" href="#main">Skip to the main content</a>
+
+<header class="site-head">
+  <div class="wrap site-head__bar">
+    <a class="brand" href="index.html">
+      <span class="brand__name">Maggie's Collection</span>
+      <span class="brand__note">Kimana Town</span>
+    </a>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="index.html" aria-current="page">Home</a>
+      <a href="catalogue.html">Catalogue</a>
+      <a href="delivery.html">Delivery</a>
+      <a href="size-guide.html">Size guide</a>
+    </nav>
+    <div class="head-tools">
+      <button class="icon-btn js-cart-open" type="button" aria-label="Open your cart">
+        Cart <span class="cart-count">0</span>
+      </button>
+      <button class="icon-btn burger" id="burger" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero">
+  <div class="wrap hero__grid">
+    <div>
+      <h1 class="hero__title">Clothes that survive the road to Kimana.</h1>
+      <p class="hero__lead">Maggie picks every piece herself, one rail at a time. What you see here is what is hanging in the shop this morning.</p>
+      <div class="hero__actions">
+        <a class="btn btn--solid" href="catalogue.html">See what is in</a>
+        <a class="btn btn--ghost" href="size-guide.html">Find your size</a>
+      </div>
+    </div>
+    <div class="arch">
+      <span class="arch__seal">Kimana Town · since 2019</span>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <div class="rail-head">
+      <h2>New on the rail</h2>
+      <a href="catalogue.html">Everything</a>
+    </div>
+    <div class="rail" id="newRail"></div>
+  </div>
+</section>
+
+<section class="section section--shell">
+  <div class="wrap split">
+    <div class="reveal">
+      <h2>A small shop that answers.</h2>
+      <p>You are buying from one woman and one tailor, not a warehouse. That means the hem can be taken up before the dress leaves, the colour you saw is the colour that arrives, and somebody remembers what you bought last time.</p>
+      <p>Message us and Maggie answers. If she is with a customer it takes a few minutes, not a few days.</p>
+    </div>
+    <ul class="note-list reveal">
+      <li><b>Alterations are free</b><br>Hems and waists on anything bought here, usually done the same day.</li>
+      <li><b>We hold pieces</b><br>24 hours with nothing down, five days with half paid.</li>
+      <li><b>Delivery reaches you</b><br>Free in town, boda to Oloitokitok, courier to Nairobi.</li>
+      <li><b>Exchanges are simple</b><br><span id="returnDays">3</span> days with tags on, no argument.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2>Browse by rail</h2>
+    <div class="grid" style="margin-top:1.2rem">
+      <a class="card" href="catalogue.html?c=dresses"><div class="card__body"><h3 class="card__name">Dresses</h3><p class="card__desc">Church, office and occasion.</p></div></a>
+      <a class="card" href="catalogue.html?c=tops"><div class="card__body"><h3 class="card__name">Tops and blouses</h3><p class="card__desc">Everyday layers.</p></div></a>
+      <a class="card" href="catalogue.html?c=bottoms"><div class="card__body"><h3 class="card__name">Skirts and trousers</h3><p class="card__desc">Cuts that hold their shape.</p></div></a>
+      <a class="card" href="catalogue.html?c=ankara"><div class="card__body"><h3 class="card__name">Ankara and prints</h3><p class="card__desc">Tailored here in Kimana.</p></div></a>
+      <a class="card" href="catalogue.html?c=bags"><div class="card__body"><h3 class="card__name">Bags</h3><p class="card__desc">Carry-everything to going-out.</p></div></a>
+      <a class="card" href="catalogue.html?c=shoes"><div class="card__body"><h3 class="card__name">Shoes</h3><p class="card__desc">Flats, heels and sandals.</p></div></a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--shell">
+  <div class="wrap split">
+    <div>
+      <h2>Come and try things on.</h2>
+      <p id="shopAddress">Kimana Town, along the Emali–Oloitokitok road, Kajiado County.</p>
+      <p>There is a mirror, a fitting room and tea. Walk-ins do not need an appointment.</p>
+    </div>
+    <ul class="note-list" id="hoursList"></ul>
+  </div>
+</section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>Maggie's Collection</h4>
+        <p style="color:inherit">Pieces picked one at a time for women in Kimana, Oloitokitok and everywhere the matatu goes.</p>
+        <a class="btn btn--rose" id="waDirect" href="delivery.html" target="_blank" rel="noopener">Message us on WhatsApp</a>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul class="foot-list">
+          <li><a href="catalogue.html?c=dresses">Dresses</a></li>
+          <li><a href="catalogue.html?c=tops">Tops and blouses</a></li>
+          <li><a href="catalogue.html?c=ankara">Ankara and prints</a></li>
+          <li><a href="catalogue.html?c=bags">Bags</a></li>
+          <li><a href="catalogue.html?c=shoes">Shoes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Know before you buy</h4>
+        <ul class="foot-list">
+          <li><a href="delivery.html">Delivery and payment</a></li>
+          <li><a href="size-guide.html">Size guide</a></li>
+          <li><a href="delivery.html#returns">Returns</a></li>
+          <li><a href="admin/admin.html">Staff sign in</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="foot-rule">
+    <div class="foot-fine">
+      <span>&copy; <span class="js-year">2026</span> Maggie's Collection, Kimana Town, Kajiado County.</span>
+      <span>Built by Flynn Technologies</span>
+    </div>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+
+<aside class="drawer" id="cartDrawer" aria-label="Your cart">
+  <div class="drawer__head">
+    <h3>Your cart</h3>
+    <button class="icon-btn" id="cartClose" type="button">Close</button>
+  </div>
+  <div class="drawer__body">
+    <p class="form-msg" id="cartNote"></p>
+    <div id="cartLines"></div>
+
+    <form id="checkoutForm" novalidate style="margin-top:1.4rem">
+      <h3 style="font-size:1.1rem">Where is it going?</h3>
+      <label class="field"><span>Your name</span><input id="custName" name="name" type="text" autocomplete="name" required></label>
+      <label class="field"><span>Phone number</span><input id="custPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></label>
+      <label class="field"><span>Delivery area</span><select id="zone" name="zone"></select></label>
+      <label class="field"><span>Exact place to drop it</span><input id="custLocation" name="location" type="text" placeholder="Shop, stage or house you are known at" required></label>
+      <label class="field"><span>Anything we should know</span><textarea id="custNotes" name="notes" rows="2"></textarea></label>
+      <p class="form-msg" id="feeNote"></p>
+      <p class="form-msg" id="checkoutMsg"></p>
+    </form>
+  </div>
+  <div class="drawer__foot">
+    <div class="totals"><span>Total to pay</span><b id="grandTotal">KSh 0</b></div>
+    <button class="btn btn--solid btn--wide" id="toCheckout" type="submit" form="checkoutForm" disabled>Send order</button>
+  </div>
+</aside>
+
+<button class="concierge-btn" id="chatOpen" type="button">Ask the concierge</button>
+
+<section class="concierge" id="concierge" aria-label="Concierge">
+  <div class="concierge__head">
+    <strong>Concierge</strong>
+    <button id="chatClose" type="button" aria-label="Close the concierge">&times;</button>
+  </div>
+  <div class="concierge__log" id="chatLog"></div>
+  <div class="quick" id="chatQuick"></div>
+  <form class="concierge__form" id="chatForm">
+    <input id="chatInput" type="text" placeholder="Ask about delivery, sizing, payment…" autocomplete="off">
+    <button class="btn btn--rose" type="submit">Ask</button>
+  </form>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/faq.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
