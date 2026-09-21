@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Delivery, payment and returns — Maggie's Collection</title>
+<meta name="description" content="Delivery fees across Kimana, Oloitokitok, Emali and Nairobi, how to pay by M-Pesa, and how exchanges work.">
+<meta name="theme-color" content="#FDF8F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1E1216" media="(prefers-color-scheme: dark)">
+<script>(function(){try{var t=localStorage.getItem("maggies_theme");if(!t){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+
+</head>
+<body>
+<a class="skip" href="#main">Skip to the main content</a>
+
+<header class="site-head">
+  <div class="wrap site-head__bar">
+    <a class="brand" href="index.html">
+      <span class="brand__name">Maggie's Collection</span>
+      <span class="brand__note">Kimana Town</span>
+    </a>
+    <nav class="nav" id="nav" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="catalogue.html">Catalogue</a>
+      <a href="delivery.html" aria-current="page">Delivery</a>
+      <a href="size-guide.html">Size guide</a>
+    </nav>
+    <div class="head-tools">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
+      <button class="icon-btn js-cart-open" type="button" aria-label="Open your cart">
+        Cart <span class="cart-count">0</span>
+      </button>
+      <button class="icon-btn burger" id="burger" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="section--tight">
+  <div class="wrap">
+    <h1 style="margin-top:1.5rem">Delivery, payment and returns</h1>
+    <p>No surprises at the door. Here is exactly what it costs to get a parcel to you, how to pay, and what happens if something does not fit.</p>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <h2>Where we deliver</h2>
+    <div class="table-scroll" id="zoneTable"></div>
+  </div>
+</section>
+
+<section class="section section--shell">
+  <div class="wrap split">
+    <div>
+      <h2>Paying</h2>
+      <p>M-Pesa is the main option. Confirm the number with us on WhatsApp before you send anything, then share the confirmation message so we can match it to your order.</p>
+      <p id="mpesaLine"></p>
+      <p>Cash works for hand deliveries inside town. Orders leaving Kimana are paid before the parcel does.</p>
+    </div>
+    <div>
+      <h2 id="returns">Returns and exchanges</h2>
+      <p>You have <span id="returnDays">3</span> days to exchange anything that does not fit, as long as the tags are still on and it has not been worn or washed.</p>
+      <p>Faulty pieces are replaced or refunded in full, and we cover the delivery both ways. Pierced jewellery cannot come back, for hygiene.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split">
+    <div>
+      <h2>Finding us</h2>
+      <p id="shopAddress">Kimana Town, Kajiado South. Alongside Zawadi Hotel.</p>
+      <p>Ask anyone for Zawadi Hotel and we are right beside it.</p>
+    </div>
+    <ul class="note-list" id="hoursList"></ul>
+  </div>
+</section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>Maggie's Collection</h4>
+        <p style="color:inherit">Menswear, womenswear and unisex pieces, XS to 5XL, picked one at a time for Kimana, Oloitokitok and everywhere the matatu goes.</p>
+        <a class="btn btn--rose" id="waDirect" href="delivery.html" target="_blank" rel="noopener">Message us on WhatsApp</a>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul class="foot-list">
+          <li><a href="catalogue.html?c=dresses">Dresses</a></li>
+          <li><a href="catalogue.html?c=tops">Tops and shirts</a></li>
+          <li><a href="catalogue.html?c=menswear">Menswear</a></li>
+          <li><a href="catalogue.html?c=ankara">Ankara and prints</a></li>
+          <li><a href="catalogue.html?c=bags">Bags</a></li>
+          <li><a href="catalogue.html?c=shoes">Shoes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Know before you buy</h4>
+        <ul class="foot-list">
+          <li><a href="delivery.html">Delivery and payment</a></li>
+          <li><a href="size-guide.html">Size guide</a></li>
+          <li><a href="delivery.html#returns">Returns</a></li>
+          <li><a href="admin/admin.html">Staff sign in</a></li>
+        </ul>
+      </div>
+    </div>
+    <hr class="foot-rule">
+    <div class="foot-fine">
+      <span>&copy; <span class="js-year">2026</span> Maggie's Collection, Kimana Town, Kajiado County.</span>
+      <span>Built by Flynn Technologies</span>
+    </div>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+
+<aside class="drawer" id="cartDrawer" aria-label="Your cart">
+  <div class="drawer__head">
+    <h3>Your cart</h3>
+    <button class="icon-btn" id="cartClose" type="button">Close</button>
+  </div>
+  <div class="drawer__body">
+    <p class="form-msg" id="cartNote"></p>
+    <div id="cartLines"></div>
+
+    <form id="checkoutForm" novalidate style="margin-top:1.4rem">
+      <h3 style="font-size:1.1rem">Where is it going?</h3>
+      <label class="field"><span>Your name</span><input id="custName" name="name" type="text" autocomplete="name" required></label>
+      <label class="field"><span>Phone number</span><input id="custPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></label>
+      <label class="field"><span>Delivery area</span><select id="zone" name="zone"></select></label>
+      <label class="field"><span>Exact place to drop it</span><input id="custLocation" name="location" type="text" placeholder="Shop, stage or house you are known at" required></label>
+      <label class="field"><span>Anything we should know</span><textarea id="custNotes" name="notes" rows="2"></textarea></label>
+      <p class="form-msg" id="feeNote"></p>
+      <p class="form-msg" id="checkoutMsg"></p>
+    </form>
+  </div>
+  <div class="drawer__foot">
+    <div class="totals"><span>Total to pay</span><b id="grandTotal">KSh 0</b></div>
+    <button class="btn btn--solid btn--wide" id="toCheckout" type="submit" form="checkoutForm" disabled>Send order</button>
+  </div>
+</aside>
+
+<button class="concierge-btn" id="chatOpen" type="button">Ask the concierge</button>
+
+<section class="concierge" id="concierge" aria-label="Concierge">
+  <div class="concierge__head">
+    <strong>Concierge</strong>
+    <button id="chatClose" type="button" aria-label="Close the concierge">&times;</button>
+  </div>
+  <div class="concierge__log" id="chatLog"></div>
+  <div class="quick" id="chatQuick"></div>
+  <form class="concierge__form" id="chatForm">
+    <input id="chatInput" type="text" placeholder="Ask about delivery, sizing, payment…" autocomplete="off">
+    <button class="btn btn--rose" type="submit">Ask</button>
+  </form>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/theme.js"></script>
+<script src="js/config.js"></script>
+<script src="js/faq.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

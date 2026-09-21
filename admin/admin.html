@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Staff desk — Maggie's Collection</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#FDF8F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1E1216" media="(prefers-color-scheme: dark)">
+<script>(function(){try{var t=localStorage.getItem("maggies_theme");if(!t){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Karla:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<button class="icon-btn theme-fab" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
+
+<section class="gate" id="gate">
+  <h1>Staff desk</h1>
+  <p>Sign in to manage the rail and today's orders.</p>
+  <form id="gateForm" novalidate>
+    <label class="field"><span>Email</span><input id="email" type="email" autocomplete="username" required></label>
+    <label class="field">
+      <span>Password</span>
+      <span class="pw-wrap">
+        <input id="password" type="password" autocomplete="current-password" required>
+        <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password" aria-pressed="false">Show</button>
+      </span>
+    </label>
+    <p class="admin-msg" id="gateMsg"></p>
+    <button class="btn btn--solid btn--wide" type="submit">Sign in</button>
+  </form>
+  <p style="margin-top:1.2rem"><a href="../index.html">Back to the shop</a></p>
+</section>
+
+<div class="admin-shell" id="desk" hidden>
+  <div class="admin-bar">
+    <h1>Staff desk</h1>
+    <div>
+      <span class="admin-who" id="who"></span>
+      <button class="mini" id="signOut" type="button">Sign out</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab is-active" type="button" data-pane="products">Products</button>
+    <button class="tab" type="button" data-pane="orders">Orders</button>
+  </div>
+
+  <section class="pane is-active" id="pane-products">
+    <div class="panel">
+      <h2>Add or edit a product</h2>
+      <p class="admin-msg" id="productMsg"></p>
+      <form id="productForm" novalidate>
+        <div class="two-col">
+          <label class="field"><span>Name</span><input id="pName" type="text" required></label>
+          <label class="field"><span>Price in KSh</span><input id="pPrice" type="number" min="0" step="10" required></label>
+          <label class="field"><span>Category</span><select id="pCategory"></select></label>
+          <label class="field"><span>Sort order, lower shows first</span><input id="pSort" type="number" value="0"></label>
+        </div>
+        <label class="field"><span>One line about it</span><input id="pDescription" type="text"></label>
+        <label class="field">
+          <span>Product photo</span>
+          <input id="pImageFile" type="file" accept="image/*">
+        </label>
+        <p class="row__meta" style="margin:-0.5rem 0 0.9rem">
+          JPG or PNG, a few MB or less. Leave empty when editing to keep the current photo.
+        </p>
+        <div id="pImagePreviewWrap" hidden style="margin:-0.5rem 0 0.9rem">
+          <img id="pImagePreview" class="img-preview" alt="Current product photo">
+        </div>
+        <label class="field">
+          <span>Sizes, separated by commas</span>
+          <input id="pSizes" type="text" placeholder="S, M, L, XL">
+        </label>
+        <p class="row__meta" style="margin:-0.5rem 0 0.9rem">
+          Letters (XS&ndash;5XL) for most items · numbers (28&ndash;46) for men's trousers · Small, Medium, Large, Suitcase for bags
+        </p>
+        <label class="field" style="display:flex;gap:0.5rem;align-items:center">
+          <input id="pActive" type="checkbox" checked style="width:auto"><span style="margin:0">Show on the rail</span>
+        </label>
+        <div class="row__acts">
+          <button class="btn btn--solid" id="saveProduct" type="submit">Add product</button>
+          <button class="btn btn--ghost" id="cancelEdit" type="button" hidden>Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>On the rail</h2>
+      <div id="productList"></div>
+    </div>
+  </section>
+
+  <section class="pane" id="pane-orders">
+    <div class="panel">
+      <h2>Orders</h2>
+      <p class="admin-msg" id="orderMsg"></p>
+      <div class="row__acts" style="margin-bottom:1rem">
+        <select class="mini" id="orderFilter"></select>
+        <button class="mini" id="refreshOrders" type="button">Refresh</button>
+      </div>
+      <div id="orderList"></div>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
