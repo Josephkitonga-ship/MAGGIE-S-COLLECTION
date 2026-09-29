@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Maggie's Collection — clothing for everyone in Kimana Town</title>
-<meta name="description" content="Menswear, womenswear and unisex clothing, XS to 5XL, picked by hand in Kimana Town beside Zawadi Hotel. Free alterations, delivery across Kajiado South, order on WhatsApp.">
+<title>Maggie's Collection and David's Boutique — clothing for everyone in Kimana Town</title>
+<meta name="description" content="Two boutiques, one rail. Menswear, womenswear and unisex clothing, XS to 5XL, picked by hand in Kimana Town beside Zawadi Hotel. Free alterations, delivery across Kajiado South, order on WhatsApp.">
 <meta name="theme-color" content="#FDF8F3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1E1216" media="(prefers-color-scheme: dark)">
 <script>(function(){try{var t=localStorage.getItem("maggies_theme");if(!t){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/stores.css">
 
 </head>
 <body>
@@ -30,6 +31,7 @@
       <a href="size-guide.html">Size guide</a>
     </nav>
     <div class="head-tools">
+      <div class="social social--head"><a class="social__btn" data-social="whatsapp" href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.2A9.5 9.5 0 1 0 12 2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.6 7.9c-.3.3-.6.9-.5 1.6.3 2.1 2.9 4.9 5.2 5.4.7.2 1.4-.2 1.7-.6l.3-.6-1.7-1-.9.7c-.9-.3-2-1.3-2.4-2.2l.7-.9-1-1.7z" fill="currentColor"/></svg></a><a class="social__btn" data-social="facebook" href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 21v-8h2.7l.4-3.2h-3.1V7.9c0-.9.3-1.5 1.6-1.5h1.6V3.5c-.3 0-1.2-.1-2.4-.1-2.4 0-4 1.4-4 4.1v2.3H7.7V13h2.7v8z" fill="currentColor"/></svg></a><a class="social__btn" data-social="instagram" href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg></a></div>
       <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
       <button class="icon-btn js-cart-open" type="button" aria-label="Open your cart">
         Cart <span class="cart-count">0</span>
@@ -44,7 +46,7 @@
   <div class="wrap hero__grid">
     <div>
       <h1 class="hero__title">Clothes that survive the road to Kimana.</h1>
-      <p class="hero__lead">We posses the style you prefer in Town. We pick every piece considering all taste of beauty with both latest fashions and heritage fashions , and what you see here is what is hanging in the shop this morning.</p>
+      <p class="hero__lead">We have the style you prefer in town. We pick every piece with every taste in mind, latest fashions and heritage fashions alike, and what you see here is what is hanging in the shop this morning.</p>
       <div class="hero__actions">
         <a class="btn btn--solid" href="catalogue.html">See what is in</a>
         <a class="btn btn--ghost" href="size-guide.html">Find your size</a>
@@ -53,6 +55,29 @@
     <div class="arch">
       <img src="images/hero.jpg" alt="Inside Maggie's Collection" loading="eager" onerror="this.remove()">
       <span class="arch__seal">Kimana Town &middot; since 2020</span>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="wrap">
+    <h2>Two boutiques, one rail</h2>
+    <p>Shop Maggie's Collection and David's Boutique side by side. Every piece carries the name of the boutique it comes from, and one cart covers both.</p>
+    <div class="boutiques">
+      <a class="boutique boutique--maggies" href="catalogue.html?s=maggies">
+        <img class="boutique__photo" src="images/maggies.jpg" alt="" loading="lazy" onerror="this.remove()">
+        <h3>Maggie's Collection</h3>
+        <p>Dresses, tops, Ankara and bags.</p>
+        <p data-store-count="maggies"></p>
+        <span class="boutique__go">Shop Maggie's</span>
+      </a>
+      <a class="boutique boutique--davids" href="catalogue.html?s=davids">
+        <img class="boutique__photo" src="images/davids.jpg" alt="" loading="lazy" onerror="this.remove()">
+        <h3>David's Boutique</h3>
+        <p>Menswear, unisex layers and shoes.</p>
+        <p data-store-count="davids"></p>
+        <span class="boutique__go">Shop David's</span>
+      </a>
     </div>
   </div>
 </section>
@@ -70,9 +95,9 @@
 <section class="section section--shell">
   <div class="wrap split">
     <div class="reveal">
-      <h2>A Dressing store that answers All Designs.</h2>
-      <p>You are buying from a Unified botique polaour, not a warehouse. That means the hem can be taken up before the piece leaves, the colour you saw is the colour that arrives, and somebody remembers what you bought last time.</p>
-      <p>Message us and The Fashion Team answers. If they are cought up with  customers it takes a few minutes, not a few days.</p>
+      <h2>A dressing store for every design.</h2>
+      <p>You are buying from a unified boutique parlour, not a warehouse. That means the hem can be taken up before the piece leaves, the colour you saw is the colour that arrives, and somebody remembers what you bought last time.</p>
+      <p>Message us and the Fashion Team answers. If they are caught up with customers it takes a few minutes, not a few days.</p>
     </div>
     <ul class="note-list reveal">
       <li><b>Alterations are free</b><br>Hems and waists on anything bought here, usually done the same day.</li>
@@ -115,18 +140,19 @@
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <h4>Maggie's Collection</h4>
-        <p style="color:inherit">Menswear, womenswear and unisex pieces, XS to 5XL, picked one at a time for Kimana, Oloitokitok and everywhere the matatu goes.</p>
+        <h4>Maggie's Collection &amp; David's Boutique</h4>
+        <p style="color:inherit">Two boutiques, one rail. Menswear, womenswear and unisex pieces, XS to 5XL, picked one at a time for Kimana, Oloitokitok and everywhere the matatu goes.</p>
         <a class="btn btn--rose" id="waDirect" href="delivery.html" target="_blank" rel="noopener">Message us on WhatsApp</a>
+        <div class="social"><a class="social__btn" data-social="whatsapp" href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.2A9.5 9.5 0 1 0 12 2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.6 7.9c-.3.3-.6.9-.5 1.6.3 2.1 2.9 4.9 5.2 5.4.7.2 1.4-.2 1.7-.6l.3-.6-1.7-1-.9.7c-.9-.3-2-1.3-2.4-2.2l.7-.9-1-1.7z" fill="currentColor"/></svg><span>WhatsApp</span></a><a class="social__btn" data-social="facebook" href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 21v-8h2.7l.4-3.2h-3.1V7.9c0-.9.3-1.5 1.6-1.5h1.6V3.5c-.3 0-1.2-.1-2.4-.1-2.4 0-4 1.4-4 4.1v2.3H7.7V13h2.7v8z" fill="currentColor"/></svg><span>Facebook</span></a><a class="social__btn" data-social="instagram" href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg><span>Instagram</span></a></div>
       </div>
       <div>
         <h4>Shop</h4>
         <ul class="foot-list">
+          <li><a href="catalogue.html?s=maggies">Maggie's Collection</a></li>
+          <li><a href="catalogue.html?s=davids">David's Boutique</a></li>
+          <li><a href="catalogue.html?offers=1">On offer</a></li>
           <li><a href="catalogue.html?c=dresses">Dresses</a></li>
-          <li><a href="catalogue.html?c=tops">Tops and shirts</a></li>
           <li><a href="catalogue.html?c=menswear">Menswear</a></li>
-          <li><a href="catalogue.html?c=ankara">Ankara and prints</a></li>
-          <li><a href="catalogue.html?c=bags">Bags</a></li>
           <li><a href="catalogue.html?c=shoes">Shoes</a></li>
         </ul>
       </div>
@@ -142,7 +168,7 @@
     </div>
     <hr class="foot-rule">
     <div class="foot-fine">
-      <span>&copy; <span class="js-year">2026</span> Maggie's Collection, Kimana Town, Kajiado County.</span>
+      <span>&copy; <span class="js-year">2026</span> Maggie's Collection and David's Boutique, Kimana Town, Kajiado County.</span>
       <span>Built by Flynn Technologies</span>
     </div>
   </div>
@@ -158,6 +184,7 @@
   <div class="drawer__body">
     <p class="form-msg" id="cartNote"></p>
     <div id="cartLines"></div>
+    <p class="form-msg" id="cartSplit" style="margin-top:0.8rem"></p>
 
     <form id="checkoutForm" novalidate style="margin-top:1.4rem">
       <h3 style="font-size:1.1rem">Where is it going?</h3>
@@ -194,6 +221,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/theme.js"></script>
 <script src="js/config.js"></script>
+<script src="js/orders.js"></script>
 <script src="js/faq.js"></script>
 <script src="js/script.js"></script>
 </body>
