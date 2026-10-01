@@ -17,7 +17,7 @@ const WHATSAPP_PLACEHOLDER = "254700000000";
 
 const SHOP = {
   name: "Maggie's Collection",
-  tagline: "Dressing all of Kimana — every size, every body",
+  tagline: "Quality fashion for the whole family in Kimana",
   owner: "The Fashion Team",
   address: "Kimana Town, Kajiado South",
   landmark: "Alongside Zawadi Hotel",
@@ -68,6 +68,7 @@ const SHOP = {
     { slug: "tops", name: "Tops & shirts", blurb: "Everyday layers for anyone" },
     { slug: "bottoms", name: "Trousers & skirts", blurb: "Cuts that hold their shape" },
     { slug: "menswear", name: "Menswear", blurb: "Shirts, trousers, jackets" },
+    { slug: "kids", name: "Kids & teens", blurb: "Everyday and occasion outfits" },
     { slug: "ankara", name: "Ankara & prints", blurb: "Tailored in Kimana, any body" },
     { slug: "bags", name: "Bags", blurb: "Carry-everything to going-out" },
     { slug: "shoes", name: "Shoes", blurb: "Flats, heels, sandals, boots" },
@@ -78,7 +79,8 @@ const SHOP = {
   sizeSets: {
     clothing: ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL", "One size"],
     mensTrousers: ["28", "30", "32", "34", "36", "38", "40", "42", "44", "46"],
-    bags: ["Small", "Medium", "Large", "Suitcase"]
+    bags: ["Small", "Medium", "Large", "Suitcase"],
+    kids: ["2-3Y", "4-5Y", "6-7Y", "8-9Y", "10-11Y", "12-13Y", "14-15Y"]
   },
   cartKey: "maggies_cart",
   /* Only read by the concierge ("your order number starts with ..").

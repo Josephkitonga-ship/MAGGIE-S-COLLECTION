@@ -155,6 +155,20 @@
       <label class="field"><span>Sort order, lower shows first</span><input id="pSort" type="number" value="0"></label>
     </div>
     <label class="field"><span>One line about it</span><input id="pDescription" type="text"></label>
+    <div class="two-col">
+      <label class="field"><span>Material</span><input id="pMaterial" type="text" placeholder="e.g. Cotton blend"></label>
+      <label class="field"><span>Dimensions</span><input id="pDimensions" type="text" placeholder="e.g. Length 68 cm"></label>
+    </div>
+    <label class="field"><span>Care / fabric details</span><input id="pCare" type="text" placeholder="e.g. Cold hand wash, dry in shade"></label>
+    <label class="field">
+      <span>Badge on the shop</span>
+      <select id="pHighlight">
+        <option value="auto">Automatic (NEW for 14 days, BEST DEAL at 20% off)</option>
+        <option value="new">Always NEW</option>
+        <option value="best_deal">Always BEST DEAL</option>
+        <option value="none">No badge</option>
+      </select>
+    </label>
     <label class="field">
       <span>Product photo</span>
       <input id="pImageFile" type="file" accept="image/*">
@@ -162,10 +176,16 @@
     <p class="hint">JPG or PNG, a few MB or less. Leave empty when editing to keep the current photo.</p>
     <div id="pImagePreviewWrap" hidden><img id="pImagePreview" class="img-preview" alt="Current product photo"></div>
     <label class="field">
+      <span>More photos for the gallery, optional</span>
+      <input id="pGalleryFiles" type="file" accept="image/*" multiple>
+    </label>
+    <p class="hint" id="pGalleryNote">Pick several at once. They are added to the gallery on the product page.</p>
+    <label class="check" id="pGalleryClearWrap" hidden><input id="pGalleryClear" type="checkbox"><span>Remove the extra photos already saved</span></label>
+    <label class="field">
       <span>Sizes, separated by commas</span>
       <input id="pSizes" type="text" placeholder="S, M, L, XL">
     </label>
-    <p class="hint">Letters (XS&ndash;5XL) for most items · numbers (28&ndash;46) for men's trousers · Small, Medium, Large, Suitcase for bags</p>
+    <p class="hint">Letters (XS&ndash;5XL) for most items · numbers (28&ndash;46) for men's trousers · 2-3Y, 4-5Y &hellip; 14-15Y for kids · Small, Medium, Large, Suitcase for bags</p>
     <label class="check"><input id="pActive" type="checkbox" checked><span>Show on the rail</span></label>
     <div class="sheet__acts">
       <button class="btn btn--solid" id="saveProduct" type="submit">Add product</button>

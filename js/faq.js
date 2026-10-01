@@ -71,7 +71,7 @@
       phrases: ["what size", "true to size", "size chart", "size guide",
         "do you stock", "do you have my size", "size up", "size down"],
       answer:
-        "We stock XS through 5XL and the rail is not split by gender, so take whatever fits you. Men's trousers are sized by waist number, 28 to 46, not letters. Bags come in Small, Medium and Large, with Suitcase for travel cases. The size guide page has full measurements. Tell me your usual size and what you are looking at and I will say whether to size up."
+        "We stock kids from 2 to 15 years and adults from XS through 5XL, and the rail is not split by gender, so take whatever fits. Men's trousers are sized by waist number, 28 to 46, not letters. Bags come in Small, Medium and Large, with Suitcase for travel cases. The size guide page has full measurements. Tell me your usual size and what you are looking at and I will say whether to size up."
     },
     {
       id: "stock",
@@ -91,7 +91,7 @@
       phrases: ["do you have men", "for men", "men's", "mens clothes",
         "plus size", "big sizes", "only for women", "for ladies only"],
       answer:
-        "Everyone. The rail carries menswear, womenswear and unisex pieces side by side, in XS through 5XL. Nothing here is closed off by gender or size, so if it fits you it is yours. Tell us what you are after and we will pull what we have in your size."
+        "The whole family. The rail carries womenswear, menswear and kids' and teens' outfits side by side, from children's sizes to adult 5XL. Nothing here is closed off by gender or size, so if it fits it is yours. Tell us what you are after and we will pull what we have in your size."
     },
     {
       id: "hours",
@@ -110,7 +110,7 @@
       phrases: ["where are you", "where is the", "where are the", "your shop",
         "can i come", "come and see"],
       answer:
-        "{{address}}. {{landmark}}. Walk-ins are welcome during opening hours and you can try pieces on before you buy."
+        "{{address}}. {{landmark}}. Walk-ins are welcome during opening hours and you can try pieces on before you decide."
     },
     {
       id: "order_status",
@@ -119,7 +119,7 @@
         "confirmation", "receipt", "arrived", "dispatch", "dispatched"],
       phrases: ["my order", "order number", "has it shipped", "where is my"],
       answer:
-        "Send your order number, it starts with {{prefix}}, and we will check it against today's dispatch list and tell you exactly where the parcel is."
+        "Send your reference number, it starts with {{prefix}}, and we will check it against today's dispatch list and tell you exactly where the parcel is."
     },
     {
       id: "reserve",
@@ -147,7 +147,7 @@
       phrases: ["take it in", "take in the", "made to measure", "shorten the",
         "let it out"],
       answer:
-        "Our tailor sits in the shop. Simple hems and taking in a waist are free on anything bought here and usually done within a day. Made-to-measure Ankara starts from your own measurements, give us five to seven days."
+        "Our tailor sits in the shop. Simple hems and taking in a waist are free on anything you take home and usually done within a day. Made-to-measure Ankara starts from your own measurements, give us five to seven days."
     },
     {
       id: "care",
@@ -165,7 +165,7 @@
         "chat", "maggie", "someone", "agent"],
       phrases: ["talk to someone", "real person", "call you"],
       answer:
-        "{{owner}} answers WhatsApp directly between opening and closing. Tap the WhatsApp button below and your question comes through with whatever is in your cart already attached."
+        "{{owner}} answers WhatsApp directly between opening and closing. Tap the WhatsApp button and send your question, or send your saved items and we will check them for you."
     }
   ];
 

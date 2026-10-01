@@ -26,8 +26,8 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 NAV_ITEMS = [
     ("index.html", "Home"),
     ("catalogue.html", "Catalogue"),
-    ("delivery.html", "Delivery"),
-    ("size-guide.html", "Size guide"),
+    ("delivery.html", "Delivery &amp; Holds"),
+    ("size-guide.html", "Size Guide"),
 ]
 
 SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
@@ -94,8 +94,8 @@ SHELL = """<!doctype html>
     <div class="head-tools">
       <div class="social social--head">{{SOCIAL_HEAD}}</div>
       <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
-      <button class="icon-btn js-cart-open" type="button" aria-label="Open your cart">
-        Cart <span class="cart-count">0</span>
+      <button class="icon-btn js-cart-open" type="button" aria-label="Open your saved items">
+        Saved <span class="cart-count">0</span>
       </button>
       <button class="icon-btn burger" id="burger" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
     </div>
@@ -110,35 +110,34 @@ SHELL = """<!doctype html>
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <h4>Maggie's Collection &amp; David's Boutique</h4>
-        <p style="color:inherit">Two boutiques, one rail. Menswear, womenswear and unisex pieces, XS to 5XL, picked one at a time for Kimana, Oloitokitok and everywhere the matatu goes.</p>
+        <h4>Maggie's Collection</h4>
+        <p style="color:inherit">Your family fashion destination in Kimana. Outfits for men, women, and kids—picked piece by piece and delivered across Kimana, Oloitokitok, and beyond.</p>
         <a class="btn btn--rose" id="waDirect" href="{{PREFIX}}delivery.html" target="_blank" rel="noopener">Message us on WhatsApp</a>
         <div class="social">{{SOCIAL_FOOT}}</div>
       </div>
       <div>
         <h4>Shop</h4>
         <ul class="foot-list">
-          <li><a href="{{PREFIX}}catalogue.html?s=maggies">Maggie's Collection</a></li>
-          <li><a href="{{PREFIX}}catalogue.html?s=davids">David's Boutique</a></li>
-          <li><a href="{{PREFIX}}catalogue.html?offers=1">On offer</a></li>
-          <li><a href="{{PREFIX}}catalogue.html?c=dresses">Dresses</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?c=dresses">Women's dresses</a></li>
           <li><a href="{{PREFIX}}catalogue.html?c=menswear">Menswear</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?c=kids">Kids &amp; teens</a></li>
           <li><a href="{{PREFIX}}catalogue.html?c=shoes">Shoes</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?offers=1">On offer</a></li>
         </ul>
       </div>
       <div>
-        <h4>Know before you buy</h4>
+        <h4>Customer Info</h4>
         <ul class="foot-list">
-          <li><a href="{{PREFIX}}delivery.html">Delivery and payment</a></li>
-          <li><a href="{{PREFIX}}size-guide.html">Size guide</a></li>
-          <li><a href="{{PREFIX}}delivery.html#returns">Returns</a></li>
+          <li><a href="{{PREFIX}}delivery.html">Delivery &amp; Holds</a></li>
+          <li><a href="{{PREFIX}}size-guide.html">Size Guide</a></li>
+          <li><a href="{{PREFIX}}delivery.html#returns">Exchanges &amp; Policy</a></li>
           <li><a href="{{PREFIX}}admin/admin.html">Staff sign in</a></li>
         </ul>
       </div>
     </div>
     <hr class="foot-rule">
     <div class="foot-fine">
-      <span>&copy; <span class="js-year">2026</span> Maggie's Collection and David's Boutique, Kimana Town, Kajiado County.</span>
+      <span>&copy; <span class="js-year">2026</span> Maggie's Collection, Kimana Town, Kajiado County.</span>
       <span>Built by Flynn Technologies</span>
     </div>
   </div>
@@ -146,9 +145,9 @@ SHELL = """<!doctype html>
 
 <div class="scrim" id="scrim"></div>
 
-<aside class="drawer" id="cartDrawer" aria-label="Your cart">
+<aside class="drawer" id="cartDrawer" aria-label="Your saved items">
   <div class="drawer__head">
-    <h3>Your cart</h3>
+    <h3>Your Selected Pieces</h3>
     <button class="icon-btn" id="cartClose" type="button">Close</button>
   </div>
   <div class="drawer__body">
@@ -157,7 +156,7 @@ SHELL = """<!doctype html>
     <p class="form-msg" id="cartSplit" style="margin-top:0.8rem"></p>
 
     <form id="checkoutForm" novalidate style="margin-top:1.4rem">
-      <h3 style="font-size:1.1rem">Where is it going?</h3>
+      <h3 style="font-size:1.1rem">Where should we deliver or hold it?</h3>
       <label class="field"><span>Your name</span><input id="custName" name="name" type="text" autocomplete="name" required></label>
       <label class="field"><span>Phone number</span><input id="custPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required></label>
       <label class="field"><span>Delivery area</span><select id="zone" name="zone"></select></label>
@@ -168,8 +167,8 @@ SHELL = """<!doctype html>
     </form>
   </div>
   <div class="drawer__foot">
-    <div class="totals"><span>Total to pay</span><b id="grandTotal">KSh 0</b></div>
-    <button class="btn btn--solid btn--wide" id="toCheckout" type="submit" form="checkoutForm" disabled>Send order</button>
+    <div class="totals"><span>Estimated Total:</span><b id="grandTotal">KSh 0</b></div>
+    <button class="btn btn--solid btn--wide" id="toCheckout" type="submit" form="checkoutForm" disabled>Send Selection via WhatsApp</button>
   </div>
 </aside>
 
@@ -359,6 +358,20 @@ ADMIN_SHELL = """<!doctype html>
       <label class="field"><span>Sort order, lower shows first</span><input id="pSort" type="number" value="0"></label>
     </div>
     <label class="field"><span>One line about it</span><input id="pDescription" type="text"></label>
+    <div class="two-col">
+      <label class="field"><span>Material</span><input id="pMaterial" type="text" placeholder="e.g. Cotton blend"></label>
+      <label class="field"><span>Dimensions</span><input id="pDimensions" type="text" placeholder="e.g. Length 68 cm"></label>
+    </div>
+    <label class="field"><span>Care / fabric details</span><input id="pCare" type="text" placeholder="e.g. Cold hand wash, dry in shade"></label>
+    <label class="field">
+      <span>Badge on the shop</span>
+      <select id="pHighlight">
+        <option value="auto">Automatic (NEW for 14 days, BEST DEAL at 20% off)</option>
+        <option value="new">Always NEW</option>
+        <option value="best_deal">Always BEST DEAL</option>
+        <option value="none">No badge</option>
+      </select>
+    </label>
     <label class="field">
       <span>Product photo</span>
       <input id="pImageFile" type="file" accept="image/*">
@@ -366,10 +379,16 @@ ADMIN_SHELL = """<!doctype html>
     <p class="hint">JPG or PNG, a few MB or less. Leave empty when editing to keep the current photo.</p>
     <div id="pImagePreviewWrap" hidden><img id="pImagePreview" class="img-preview" alt="Current product photo"></div>
     <label class="field">
+      <span>More photos for the gallery, optional</span>
+      <input id="pGalleryFiles" type="file" accept="image/*" multiple>
+    </label>
+    <p class="hint" id="pGalleryNote">Pick several at once. They are added to the gallery on the product page.</p>
+    <label class="check" id="pGalleryClearWrap" hidden><input id="pGalleryClear" type="checkbox"><span>Remove the extra photos already saved</span></label>
+    <label class="field">
       <span>Sizes, separated by commas</span>
       <input id="pSizes" type="text" placeholder="S, M, L, XL">
     </label>
-    <p class="hint">Letters (XS&ndash;5XL) for most items · numbers (28&ndash;46) for men's trousers · Small, Medium, Large, Suitcase for bags</p>
+    <p class="hint">Letters (XS&ndash;5XL) for most items · numbers (28&ndash;46) for men's trousers · 2-3Y, 4-5Y &hellip; 14-15Y for kids · Small, Medium, Large, Suitcase for bags</p>
     <label class="check"><input id="pActive" type="checkbox" checked><span>Show on the rail</span></label>
     <div class="sheet__acts">
       <button class="btn btn--solid" id="saveProduct" type="submit">Add product</button>
@@ -449,11 +468,11 @@ INDEX_BODY = """
 <section class="hero">
   <div class="wrap hero__grid">
     <div>
-      <h1 class="hero__title">Clothes that survive the road to Kimana.</h1>
-      <p class="hero__lead">We have the style you prefer in town. We pick every piece with every taste in mind, latest fashions and heritage fashions alike, and what you see here is what is hanging in the shop this morning.</p>
+      <h1 class="hero__title">Quality Fashion for the Whole Family in Kimana</h1>
+      <p class="hero__lead">Handpicked outfits for men, women, and kids—from daily wear to special occasions. Message us on WhatsApp to hold your size or arrange local delivery.</p>
       <div class="hero__actions">
-        <a class="btn btn--solid" href="catalogue.html">See what is in</a>
-        <a class="btn btn--ghost" href="size-guide.html">Find your size</a>
+        <a class="btn btn--solid" href="catalogue.html">Browse the Rails</a>
+        <a class="btn btn--ghost" href="size-guide.html">Find Your Size</a>
       </div>
     </div>
     <div class="arch">
@@ -465,22 +484,26 @@ INDEX_BODY = """
 
 <section class="section section--tight">
   <div class="wrap">
-    <h2>Two boutiques, one rail</h2>
-    <p>Shop Maggie's Collection and David's Boutique side by side. Every piece carries the name of the boutique it comes from, and one cart covers both.</p>
-    <div class="boutiques">
-      <a class="boutique boutique--maggies" href="catalogue.html?s=maggies">
-        <img class="boutique__photo" src="images/maggies.jpg" alt="" loading="lazy" onerror="this.remove()">
-        <h3>Maggie's Collection</h3>
+    <h2>One Message Covers the Family</h2>
+    <p>Find women&rsquo;s collections, menswear, and kids&rsquo; outfits side by side. Select everything your family needs and send us one quick WhatsApp message to hold your pieces or deliver to town.</p>
+    <div class="boutiques boutiques--three">
+      <a class="boutique boutique--maggies" href="catalogue.html?c=dresses">
+        <img class="boutique__photo" src="images/women.jpg" alt="" loading="lazy" onerror="this.remove()">
+        <h3>Women</h3>
         <p>Dresses, tops, Ankara and bags.</p>
-        <p data-store-count="maggies"></p>
-        <span class="boutique__go">Shop Maggie's</span>
+        <span class="boutique__go">Shop women&rsquo;s</span>
       </a>
-      <a class="boutique boutique--davids" href="catalogue.html?s=davids">
-        <img class="boutique__photo" src="images/davids.jpg" alt="" loading="lazy" onerror="this.remove()">
-        <h3>David's Boutique</h3>
-        <p>Menswear, unisex layers and shoes.</p>
-        <p data-store-count="davids"></p>
-        <span class="boutique__go">Shop David's</span>
+      <a class="boutique boutique--davids" href="catalogue.html?c=menswear">
+        <img class="boutique__photo" src="images/men.jpg" alt="" loading="lazy" onerror="this.remove()">
+        <h3>Men</h3>
+        <p>Shirts, trousers, layers and shoes.</p>
+        <span class="boutique__go">Shop menswear</span>
+      </a>
+      <a class="boutique boutique--kids" href="catalogue.html?c=kids">
+        <img class="boutique__photo" src="images/kids.jpg" alt="" loading="lazy" onerror="this.remove()">
+        <h3>Kids &amp; teens</h3>
+        <p>Everyday and occasion outfits.</p>
+        <span class="boutique__go">Shop kids&rsquo;</span>
       </a>
     </div>
   </div>
@@ -499,16 +522,16 @@ INDEX_BODY = """
 <section class="section section--shell">
   <div class="wrap split">
     <div class="reveal">
-      <h2>A dressing store for every design.</h2>
-      <p>You are buying from a unified boutique parlour, not a warehouse. That means the hem can be taken up before the piece leaves, the colour you saw is the colour that arrives, and somebody remembers what you bought last time.</p>
-      <p>Message us and the Fashion Team answers. If they are caught up with customers it takes a few minutes, not a few days.</p>
+      <h2>Personalized Care for Every Order</h2>
+      <p>From children&rsquo;s sizes to adult 5XL, we make sure every piece fits.</p>
+      <p>Free hem alterations before pickup, 24-hour holds with zero deposit, and fast WhatsApp response times. Message us and the Fashion Team answers, usually within minutes, not days.</p>
     </div>
     <ul class="note-list reveal">
-      <li><b>Alterations are free</b><br>Hems and waists on anything bought here, usually done the same day.</li>
+      <li><b>Alterations are free</b><br>Hems and waists on anything you take home, usually done the same day.</li>
       <li><b>We hold pieces</b><br>24 hours with nothing down, five days with half paid.</li>
       <li><b>Delivery reaches you</b><br>Free in town, boda to Oloitokitok, courier to Nairobi.</li>
       <li><b>Exchanges are simple</b><br><span id="returnDays">3</span> days with tags on, no argument.</li>
-      <li><b>Every size, every body</b><br>XS to 5XL on one rail, nothing shut off by gender.</li>
+      <li><b>Every size, every age</b><br>Kids from 2 years up to adult 5XL, nothing shut off by gender.</li>
     </ul>
   </div>
 </section>
@@ -521,6 +544,7 @@ INDEX_BODY = """
       <a class="card" href="catalogue.html?c=tops"><div class="card__body"><h3 class="card__name">Tops and shirts</h3><p class="card__desc">Everyday layers for anyone.</p></div></a>
       <a class="card" href="catalogue.html?c=bottoms"><div class="card__body"><h3 class="card__name">Trousers and skirts</h3><p class="card__desc">Cuts that hold their shape.</p></div></a>
       <a class="card" href="catalogue.html?c=menswear"><div class="card__body"><h3 class="card__name">Menswear</h3><p class="card__desc">Shirts, trousers, jackets.</p></div></a>
+      <a class="card" href="catalogue.html?c=kids"><div class="card__body"><h3 class="card__name">Kids &amp; teens</h3><p class="card__desc">Everyday and occasion outfits.</p></div></a>
       <a class="card" href="catalogue.html?c=ankara"><div class="card__body"><h3 class="card__name">Ankara and prints</h3><p class="card__desc">Tailored here in Kimana.</p></div></a>
       <a class="card" href="catalogue.html?c=bags"><div class="card__body"><h3 class="card__name">Bags</h3><p class="card__desc">Carry-everything to going-out.</p></div></a>
       <a class="card" href="catalogue.html?c=shoes"><div class="card__body"><h3 class="card__name">Shoes</h3><p class="card__desc">Flats, heels and sandals.</p></div></a>
@@ -544,7 +568,7 @@ CATALOGUE_BODY = """
 <section class="section--tight">
   <div class="wrap">
     <h1 style="margin-top:1.5rem">The rail today</h1>
-    <p>Everything below is in the shop right now, from Maggie's Collection and David's Boutique, XS through 5XL. The badge on each piece shows which boutique it comes from. Pick a size, add it to your cart, and send the order straight to WhatsApp.</p>
+    <p>Everything below is in the shop right now: womenswear, menswear and kids&rsquo; outfits side by side. Tap a piece to see it in full, pick a size, save it to your list, and send us one WhatsApp message to hold it.</p>
   </div>
   <div class="filters">
     <div class="wrap">
@@ -558,11 +582,19 @@ CATALOGUE_BODY = """
 </section>
 """
 
+PRODUCT_BODY = """
+<section class="section--tight">
+  <div class="wrap" id="productView">
+    <div class="state">Loading this piece…</div>
+  </div>
+</section>
+"""
+
 DELIVERY_BODY = """
 <section class="section--tight">
   <div class="wrap">
-    <h1 style="margin-top:1.5rem">Delivery, payment and returns</h1>
-    <p>No surprises at the door. Here is exactly what it costs to get a parcel to you, how to pay, and what happens if something does not fit. Pieces from both boutiques travel together and the delivery fee is charged once.</p>
+    <h1 style="margin-top:1.5rem">Delivery &amp; Holds</h1>
+    <p>No surprises at the door. Here is exactly what it costs to get a parcel to you, how holds work, how to pay, and what happens if something does not fit. Everything in one WhatsApp message travels together and delivery is charged once.</p>
   </div>
 </section>
 
@@ -573,16 +605,23 @@ DELIVERY_BODY = """
   </div>
 </section>
 
+<section class="section section--tight">
+  <div class="wrap">
+    <h2>Holding a piece</h2>
+    <p>Send us your saved items on WhatsApp and we check each piece and size for you. We hold them 24 hours with no deposit, or up to five days with half paid. Pick up in the shop or ask for delivery.</p>
+  </div>
+</section>
+
 <section class="section section--shell">
   <div class="wrap split">
     <div>
       <h2>Paying</h2>
-      <p>M-Pesa is the main option. Confirm the number with us on WhatsApp before you send anything, then share the confirmation message so we can match it to your order.</p>
+      <p>M-Pesa is the main option. Confirm the number with us on WhatsApp before you send anything, then share the confirmation message so we can match it to your reservation.</p>
       <p id="mpesaLine"></p>
-      <p>Cash works for hand deliveries inside town. Orders leaving Kimana are paid before the parcel does.</p>
+      <p>Cash works for hand deliveries inside town. Parcels leaving Kimana are paid for before they travel.</p>
     </div>
     <div>
-      <h2 id="returns">Returns and exchanges</h2>
+      <h2 id="returns">Exchanges &amp; Policy</h2>
       <p>You have <span id="returnDays">3</span> days to exchange anything that does not fit, as long as the tags are still on and it has not been worn or washed.</p>
       <p>Faulty pieces are replaced or refunded in full, and we cover the delivery both ways. Pierced jewellery cannot come back, for hygiene.</p>
     </div>
@@ -605,7 +644,7 @@ SIZE_BODY = """
 <section class="section--tight">
   <div class="wrap">
     <h1 style="margin-top:1.5rem">Size guide</h1>
-    <p>One rail, XS to 5XL, nothing shut off by gender. Measure over light clothing, keep the tape flat, and breathe normally. If you are between two sizes, take the larger one and we will take it in for free.</p>
+    <p>Kids from 2 years up to adult 5XL, nothing shut off by gender. Measure over light clothing, keep the tape flat, and breathe normally. If you are between two sizes, take the larger one and we will take it in for free.</p>
   </div>
 </section>
 
@@ -671,7 +710,7 @@ SIZE_BODY = """
         </tbody>
       </table>
     </div>
-    <p style="margin-top:1rem">Hemming is free on anything bought here. Tell us the shoes you will wear them with and the tailor sets the length to match.</p>
+    <p style="margin-top:1rem">Hemming is free on anything you take home from us. Tell us the shoes you will wear them with and the tailor sets the length to match.</p>
   </div>
 </section>
 
@@ -693,6 +732,27 @@ SIZE_BODY = """
           <tr><td>42</td><td>107</td><td>83</td></tr>
           <tr><td>44</td><td>112</td><td>83</td></tr>
           <tr><td>46</td><td>117</td><td>84</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2>Kids and teens</h2>
+    <p>Kids&rsquo; pieces are sold by age. Heights are a guide: if your child is between two sizes, take the larger one and we will hem it for free.</p>
+    <div class="table-scroll">
+      <table class="table">
+        <thead><tr><th>Age</th><th>Height (cm)</th><th>Chest (cm)</th><th>Waist (cm)</th></tr></thead>
+        <tbody>
+          <tr><td>2 &ndash; 3 years</td><td>92 &ndash; 98</td><td>53 &ndash; 55</td><td>51 &ndash; 53</td></tr>
+          <tr><td>4 &ndash; 5 years</td><td>104 &ndash; 110</td><td>57 &ndash; 59</td><td>53 &ndash; 55</td></tr>
+          <tr><td>6 &ndash; 7 years</td><td>116 &ndash; 122</td><td>61 &ndash; 64</td><td>55 &ndash; 57</td></tr>
+          <tr><td>8 &ndash; 9 years</td><td>128 &ndash; 134</td><td>66 &ndash; 69</td><td>58 &ndash; 60</td></tr>
+          <tr><td>10 &ndash; 11 years</td><td>140 &ndash; 146</td><td>72 &ndash; 76</td><td>61 &ndash; 63</td></tr>
+          <tr><td>12 &ndash; 13 years</td><td>152 &ndash; 158</td><td>78 &ndash; 82</td><td>64 &ndash; 67</td></tr>
+          <tr><td>14 &ndash; 15 years</td><td>164 &ndash; 170</td><td>84 &ndash; 88</td><td>68 &ndash; 71</td></tr>
         </tbody>
       </table>
     </div>
@@ -766,26 +826,32 @@ LOST_BODY = """
 PAGES = [
     {
         "file": "index.html",
-        "title": "Maggie's Collection and David's Boutique — clothing for everyone in Kimana Town",
-        "desc": "Two boutiques, one rail. Menswear, womenswear and unisex clothing, XS to 5XL, picked by hand in Kimana Town beside Zawadi Hotel. Free alterations, delivery across Kajiado South, order on WhatsApp.",
+        "title": "Maggie's Collection — quality fashion for the whole family in Kimana",
+        "desc": "Handpicked outfits for men, women and kids in Kimana Town, beside Zawadi Hotel. Free hem alterations, 24-hour holds, local delivery. Message us on WhatsApp to hold your size.",
         "body": INDEX_BODY,
     },
     {
         "file": "catalogue.html",
-        "title": "Catalogue — Maggie's Collection and David's Boutique",
-        "desc": "Everything hanging in Maggie's Collection and David's Boutique today, sorted by category, with sizes, prices and offers.",
+        "title": "Catalogue — Maggie's Collection",
+        "desc": "Everything on the rail today for men, women and kids, sorted by category, with sizes, prices and offers.",
         "body": CATALOGUE_BODY,
     },
     {
+        "file": "product.html",
+        "title": "Piece — Maggie's Collection",
+        "desc": "See this piece in full: photos, price, sizes and fabric. Chat to reserve it on WhatsApp.",
+        "body": PRODUCT_BODY,
+    },
+    {
         "file": "delivery.html",
-        "title": "Delivery, payment and returns — Maggie's Collection",
-        "desc": "Delivery fees across Kimana, Oloitokitok, Emali and Nairobi, how to pay by M-Pesa, and how exchanges work.",
+        "title": "Delivery &amp; Holds — Maggie's Collection",
+        "desc": "Delivery fees across Kimana, Oloitokitok, Emali and Nairobi, how 24-hour holds work, M-Pesa payment, and exchanges.",
         "body": DELIVERY_BODY,
     },
     {
         "file": "size-guide.html",
         "title": "Size guide — Maggie's Collection",
-        "desc": "Chest, bust, waist, hip and shoe measurements in centimetres, XS to 5XL, so you order the right size the first time.",
+        "desc": "Kids' sizes by age, plus chest, bust, waist, hip and shoe measurements in centimetres, XS to 5XL, so your piece fits the first time.",
         "body": SIZE_BODY,
     },
     {
@@ -802,6 +868,7 @@ def build_nav(current, prefix):
     for href, label in NAV_ITEMS:
         mark = ' aria-current="page"' if href == current else ""
         lines.append('      <a href="%s%s"%s>%s</a>' % (prefix, href, mark, label))
+    lines.append('      <a href="#saved" data-open-saved>Saved Items</a>')
     return "\n".join(lines)
 
 

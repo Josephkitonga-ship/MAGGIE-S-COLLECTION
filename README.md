@@ -17,6 +17,19 @@ Built by Flynn Technologies.
 | Verification | none | manual **Verify order** button; sales count once verified |
 | Social | none | WhatsApp, Facebook, Instagram buttons (header + footer) |
 
+## Copy and product page update
+
+- Wording is now family-first (men, women, kids and teens) and enquiry-based: **Saved Items**, **Your Selected Pieces**,
+  **Estimated Total**, **Send Selection via WhatsApp**. No cart / checkout / buy language is shown to customers.
+  Internal IDs (`cartDrawer`, `.js-cart-open`, `?s=`, `?c=`) are unchanged.
+- **Product page:** every card opens `product.html?id=...` with a photo gallery, AVAILABLE / NEW / BEST DEAL badges,
+  struck-through price with `-10% OFF`, description, specifications, size buttons,
+  **Chat to Reserve on WhatsApp** and **Save to Rail List**.
+- **NEW** shows for 14 days after a product is added; **BEST DEAL** at 20% off or more. Staff can override per product.
+- New **Kids & teens** category and an age-based kids size table.
+- Staff product form: material, dimensions, care, badge choice and extra gallery photos.
+- Run `docs/supabase-product-details.sql` once before using the new staff fields.
+
 ## Files
 
 ```
@@ -30,7 +43,9 @@ admin/admin.html        chooser: which desk?
 admin/maggie.html david.html owner.html   the three desks (generated)
 admin/admin.css admin/admin.js            one dashboard, three modes
 docs/supabase-rls.sql          original schema (already run)
-docs/supabase-two-stores.sql   NEW  run once after the original
+docs/supabase-two-stores.sql   run once after the original
+docs/supabase-product-details.sql   NEW  product page fields; run once after that
+product.html            NEW  generated product page
 tests/orders.test.js    NEW    node tests/orders.test.js
 build_pages.py          regenerates every HTML page
 ```

@@ -133,8 +133,8 @@
     writeCart(cart);
     if (dropped && $("#cartNote")) {
       $("#cartNote").textContent = dropped === 1
-        ? "One piece left your cart because it sold out."
-        : dropped + " pieces left your cart because they sold out.";
+        ? "One piece left your list because it is no longer on the rail."
+        : dropped + " pieces left your list because they are no longer on the rail.";
     }
   }
 
@@ -227,7 +227,7 @@
     const groups = ORD.groupByStore(cart, STORES);
 
     if (!cart.length) {
-      body.innerHTML = '<div class="state">Your cart is empty. Browse the catalogue and add a piece to start.</div>';
+      body.innerHTML = '<div class="state">Your selection is empty. Tap any piece on the rail to save it here.</div>';
     } else {
       body.innerHTML = groups.map((g) => `
         <div class="cart-store">
@@ -239,7 +239,7 @@
     const split = $("#cartSplit");
     if (split) {
       split.textContent = groups.length > 1
-        ? "You have pieces from both boutiques. We send one WhatsApp message with a section for each, and each boutique prepares its own order."
+        ? "Your selection covers more than one rail. One WhatsApp message covers all of it."
         : "";
     }
 
@@ -261,10 +261,16 @@
     </span>`;
   }
 
+  function productUrl(id) {
+    return "product.html?id=" + encodeURIComponent(id);
+  }
+
   function cardHTML(product) {
     const store = storeOf(product.store);
     const pct = ORD.discountPct(product.price, product.compare_price);
+    const marks = ORD.highlights(product);
     const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+    const link = productUrl(product.id);
     const picker = sizes.length
       ? `<select class="js-size" aria-label="Size for ${esc(product.name)}">
            ${sizes.map((s) => `<option value="${esc(s)}">${esc(s)}</option>`).join("")}
@@ -272,19 +278,19 @@
       : "";
     return `
       <article class="card" data-store="${esc(store.slug)}">
-        <div class="card__media">
+        <a class="card__media" href="${link}" aria-label="View ${esc(product.name)}">
           ${product.image_url ? `<img src="${esc(product.image_url)}" alt="${esc(product.name)}" loading="lazy">` : ""}
-          <span class="badge badge--store badge--${esc(store.slug)}">${esc(store.short)}</span>
           ${pct ? `<span class="badge badge--off">−${pct}%</span>` : ""}
-        </div>
+          ${marks.length ? `<span class="badge badge--hot">${esc(marks[0])}</span>` : ""}
+        </a>
         <div class="card__body">
           <p class="card__cat">${esc(categoryName(product.category))}</p>
-          <h3 class="card__name">${esc(product.name)}</h3>
+          <h3 class="card__name"><a href="${link}">${esc(product.name)}</a></h3>
           ${product.description ? `<p class="card__desc">${esc(product.description)}</p>` : ""}
           ${picker ? `<label class="field" style="margin:0.4rem 0 0"><span>Size</span>${picker}</label>` : ""}
           <div class="card__foot">
             ${priceHTML(product)}
-            <button class="btn btn--rose js-add" type="button" data-id="${esc(product.id)}">Add to cart</button>
+            <button class="btn btn--rose js-add" type="button" data-id="${esc(product.id)}">Save to Rail List</button>
           </div>
         </div>
       </article>`;
@@ -332,7 +338,7 @@
     const btn = (attrs, active, label, dot) =>
       `<button class="switch__btn${active ? " is-active" : ""}" type="button" ${attrs}>${dot ? '<span class="switch__dot"></span>' : ""}${esc(label)}</button>`;
     box.innerHTML =
-      btn('data-store="all"', view.store === "all", "Both boutiques", false) +
+      btn('data-store="all"', view.store === "all", "All pieces", false) +
       STORES.map((s) => btn('data-store="' + esc(s.slug) + '"', view.store === s.slug, s.name, true)).join("") +
       btn("data-offers", view.offers, "On offer", false);
   }
@@ -359,8 +365,8 @@
     }
     if (!items.length) {
       wrap.innerHTML = view.offers
-        ? '<div class="state">No offers on this boutique today. Tap On offer again to see everything.</div>'
-        : '<div class="state">Nothing on this boutique\'s rail today. Tap Both boutiques to see the full rail.</div>';
+        ? '<div class="state">No offers here today. Tap On offer again to see everything.</div>'
+        : '<div class="state">Nothing here today. Tap All pieces to see the full rail.</div>';
       return;
     }
 
@@ -424,7 +430,7 @@
     if (feeNote) {
       feeNote.textContent = fee === 0
         ? "Delivery is free on this order."
-        : "Delivery " + money(fee) + " on top of " + money(cartTotal()) + (ORD.groupByStore(cart, STORES).length > 1 ? ", charged once for both boutiques." : ".");
+        : "Delivery " + money(fee) + " on top of " + money(cartTotal()) + (ORD.groupByStore(cart, STORES).length > 1 ? ", charged once for everything in your selection." : ".");
     }
   }
 
@@ -433,7 +439,7 @@
     const msg = $("#checkoutMsg");
     if (!cart.length) {
       msg.className = "form-msg is-bad";
-      msg.textContent = "Add a piece to your cart first.";
+      msg.textContent = "Save a piece to your list first.";
       return;
     }
 
@@ -465,7 +471,7 @@
       window.open(buildWALink(ORD.buildMessage(groups, details, money)), "_blank");
     }
 
-    const label = codes.length > 1 ? "Orders " + codes.join(" and ") : "Order " + codes[0];
+    const label = codes.length > 1 ? "Your requests " + codes.join(" and ") : "Your request " + codes[0];
     msg.className = "form-msg is-good";
     msg.textContent = waLive
       ? label + (codes.length > 1 ? " are" : " is") + " on the way to WhatsApp. Keep " + (codes.length > 1 ? "these numbers" : "this number") + " safe."
@@ -491,7 +497,7 @@
       if (error) {
         console.error("order save failed:", error.message);
         msg.className = "form-msg is-bad";
-        msg.textContent += " It did not reach our order desk, so the WhatsApp message is your record.";
+        msg.textContent += " It did not reach our desk, so the WhatsApp message is your record.";
       }
     }
 
@@ -500,6 +506,139 @@
     paintCart();
     $("#checkoutForm").reset();
     paintCheckout();
+  }
+
+  /* --- product page ---------------------------------------------- */
+
+  /* product.html?id=...  One piece in full: photos, badges, price,
+     description, specifications, size buttons and the two actions. */
+  function paintProduct() {
+    const root = $("#productView");
+    if (!root) return;
+
+    const id = new URLSearchParams(location.search).get("id");
+    const p = PRODUCTS.find((x) => String(x.id) === String(id));
+    if (!p) {
+      root.innerHTML = '<div class="state">This piece is no longer on the rail. <a href="catalogue.html">See what is in today</a>.</div>';
+      document.title = "Piece not found — " + SHOP.name;
+      return;
+    }
+    document.title = p.name + " — " + SHOP.name;
+
+    const pct = ORD.discountPct(p.price, p.compare_price);
+    const marks = ORD.highlights(p);
+    const sizes = Array.isArray(p.sizes) ? p.sizes : [];
+    const images = [p.image_url].concat(Array.isArray(p.gallery) ? p.gallery : []).filter(Boolean);
+    const cat = SHOP.categories.find((c) => c.slug === p.category);
+    const specs = [
+      ["Material", p.material],
+      ["Dimensions", p.dimensions],
+      ["Care / fabric", p.care],
+      ["Category", categoryName(p.category)],
+      ["Sizes", sizes.join(", ")]
+    ].filter((row) => row[1]);
+    const hasDetail = !!(p.material || p.dimensions || p.care);
+    const related = PRODUCTS.filter((x) => x.category === p.category && String(x.id) !== String(p.id)).slice(0, 4);
+    let chosen = sizes.length === 1 ? sizes[0] : "";
+
+    root.innerHTML = `
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href="catalogue.html">Catalogue</a><span aria-hidden="true">/</span>
+        <a href="catalogue.html?c=${esc(p.category)}">${esc(categoryName(p.category))}</a><span aria-hidden="true">/</span>
+        <span>${esc(p.name)}</span>
+      </nav>
+      <div class="pdp">
+        <div class="pdp__gallery">
+          <div class="pdp__stage">
+            ${images.length
+              ? `<img id="pdpMain" src="${esc(images[0])}" alt="${esc(p.name)}">`
+              : `<div class="pdp__blank" aria-hidden="true">${esc(p.name.charAt(0))}</div>`}
+          </div>
+          ${images.length > 1 ? `<div class="pdp__thumbs">${images.map((src, i) =>
+            `<button type="button" class="pdp__thumb${i === 0 ? " is-active" : ""}" data-src="${esc(src)}" aria-label="Show photo ${i + 1} of ${images.length}"><img src="${esc(src)}" alt="" loading="lazy"></button>`).join("")}</div>` : ""}
+        </div>
+
+        <div class="pdp__info">
+          <div class="pdp__badges">
+            <span class="badge badge--ok">AVAILABLE</span>
+            ${marks.map((m) => `<span class="badge badge--hot-solid">${esc(m)}</span>`).join("")}
+          </div>
+          <h1 class="pdp__title">${esc(p.name)}</h1>
+          <div class="pdp__price">
+            <span class="pdp__now${pct ? " is-sale" : ""}">${money(p.price)}</span>
+            ${pct ? `<s class="pdp__was">${money(p.compare_price)}</s><span class="badge badge--off">-${pct}% OFF</span>` : ""}
+          </div>
+          ${p.description ? `<p class="pdp__desc">${esc(p.description)}</p>` : ""}
+
+          ${sizes.length ? `
+          <fieldset class="pdp__sizes">
+            <legend>Choose a size</legend>
+            <div class="pdp__sizerow" id="pdpSizes">
+              ${sizes.map((s) => `<button type="button" class="size-btn${s === chosen ? " is-active" : ""}" data-size="${esc(s)}" aria-pressed="${s === chosen}">${esc(s)}</button>`).join("")}
+            </div>
+          </fieldset>` : ""}
+
+          <p class="form-msg" id="pdpMsg" role="status"></p>
+          <div class="pdp__actions">
+            <button class="btn btn--wa" id="pdpReserve" type="button">Chat to Reserve on WhatsApp</button>
+            <button class="btn btn--ghost" id="pdpSave" type="button">Save to Rail List</button>
+          </div>
+
+          <h2 class="pdp__h2">Item specifications</h2>
+          <table class="table pdp__specs"><tbody>
+            ${specs.map((row) => `<tr><th scope="row">${esc(row[0])}</th><td>${esc(row[1])}</td></tr>`).join("")}
+          </tbody></table>
+          ${hasDetail ? "" : '<p class="pdp__note">Want the fabric or exact measurements? Ask us on WhatsApp and we will check the piece for you.</p>'}
+        </div>
+      </div>
+      ${related.length ? `
+      <section class="pdp__related">
+        <h2>More from ${esc(cat ? cat.name : "this rail")}</h2>
+        <div class="grid">${related.map(cardHTML).join("")}</div>
+      </section>` : ""}`;
+
+    const note = (text, good) => {
+      const el = $("#pdpMsg");
+      el.className = "form-msg " + (good ? "is-good" : "is-bad");
+      el.textContent = text;
+    };
+
+    root.addEventListener("click", (event) => {
+      const thumb = event.target.closest(".pdp__thumb");
+      if (thumb) {
+        $("#pdpMain").src = thumb.dataset.src;
+        $$(".pdp__thumb", root).forEach((t) => t.classList.toggle("is-active", t === thumb));
+        return;
+      }
+      const sizeBtn = event.target.closest(".size-btn");
+      if (sizeBtn) {
+        chosen = sizeBtn.dataset.size;
+        $$(".size-btn", root).forEach((b) => {
+          const on = b === sizeBtn;
+          b.classList.toggle("is-active", on);
+          b.setAttribute("aria-pressed", String(on));
+        });
+        note("", true);
+        return;
+      }
+      if (event.target.closest("#pdpSave")) {
+        if (sizes.length && !chosen) { note("Pick a size first.", false); return; }
+        addToCart(p.id, chosen);
+        note("Saved to your list.", true);
+        return;
+      }
+      if (event.target.closest("#pdpReserve")) {
+        if (sizes.length && !chosen) { note("Pick a size first.", false); return; }
+        if (waLive) {
+          /* opened inside the click, so the browser does not block it */
+          window.open(buildWALink(ORD.buildItemMessage(p, chosen, money, location.href)), "_blank");
+          note("Opening WhatsApp so we can check this piece for you.", true);
+        } else {
+          addToCart(p.id, chosen);
+          note("The WhatsApp line is not live yet, so we saved it to your list instead.", true);
+        }
+      }
+    });
   }
 
   /* --- shop facts on the page ------------------------------------- */
@@ -657,6 +796,12 @@
     }
 
     $$(".js-cart-open").forEach((btn) => btn.addEventListener("click", openDrawer));
+    $$("[data-open-saved]").forEach((link) => link.addEventListener("click", (event) => {
+      event.preventDefault();
+      const nav = $("#nav");
+      if (nav) nav.classList.remove("is-open");
+      openDrawer();
+    }));
     if ($("#cartClose")) $("#cartClose").addEventListener("click", closeDrawer);
     if (scrim) scrim.addEventListener("click", closeDrawer);
     document.addEventListener("keydown", (event) => {
@@ -727,6 +872,7 @@
     reconcileCart();
     paintRail();
     paintBoutiqueCounts();
+    paintProduct();
     paintCart();
     paintCheckout();
 

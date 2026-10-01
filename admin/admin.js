@@ -57,6 +57,7 @@
   let ORDERS = [];
   let editingId = null;
   let editingImageUrl = "";
+  let editingGallery = [];
 
   const ui = {
     pane: "overview",
@@ -452,6 +453,7 @@
   function openSheet(product) {
     editingId = product ? product.id : null;
     editingImageUrl = product ? (product.image_url || "") : "";
+    editingGallery = product && Array.isArray(product.gallery) ? product.gallery.slice() : [];
     $("#sheetTitle").textContent = product ? "Edit product" : "Add a product";
     $("#sheetMsg").textContent = "";
 
@@ -461,6 +463,16 @@
     $("#pCompare").value = product && product.compare_price ? product.compare_price : "";
     $("#pCategory").value = product ? product.category : SHOP.categories[0].slug;
     $("#pDescription").value = product ? (product.description || "") : "";
+    $("#pMaterial").value = product ? (product.material || "") : "";
+    $("#pDimensions").value = product ? (product.dimensions || "") : "";
+    $("#pCare").value = product ? (product.care || "") : "";
+    $("#pHighlight").value = product && product.highlight ? product.highlight : "auto";
+    $("#pGalleryFiles").value = "";
+    $("#pGalleryClear").checked = false;
+    $("#pGalleryClearWrap").hidden = !editingGallery.length;
+    $("#pGalleryNote").textContent = editingGallery.length
+      ? editingGallery.length + " extra photo" + (editingGallery.length === 1 ? "" : "s") + " saved. New ones you pick are added to them."
+      : "Pick several at once. They are added to the gallery on the product page.";
     $("#pImageFile").value = "";
     $("#pSizes").value = product && Array.isArray(product.sizes) ? product.sizes.join(", ") : "";
     $("#pSort").value = product ? (product.sort || 0) : 0;
@@ -532,6 +544,16 @@
       catch (err) { note("#sheetMsg", "Photo upload failed: " + err.message, false); return; }
     }
 
+    let gallery = $("#pGalleryClear").checked ? [] : editingGallery.slice();
+    const extra = Array.from($("#pGalleryFiles").files || []);
+    if (extra.length) {
+      note("#sheetMsg", "Uploading " + extra.length + " more photo" + (extra.length === 1 ? "" : "s") + "…", true);
+      try {
+        for (const f of extra) gallery.push(await uploadProductImage(f));
+      } catch (err) { note("#sheetMsg", "Photo upload failed: " + err.message, false); return; }
+    }
+
+    const highlight = $("#pHighlight").value;
     const payload = {
       store: IS_OWNER ? $("#pStore").value : STORE_MODE,
       name: name,
@@ -540,6 +562,11 @@
       category: $("#pCategory").value,
       description: $("#pDescription").value.trim(),
       image_url: imageUrl,
+      gallery: gallery,
+      material: $("#pMaterial").value.trim() || null,
+      dimensions: $("#pDimensions").value.trim() || null,
+      care: $("#pCare").value.trim() || null,
+      highlight: highlight === "auto" ? null : highlight,
       sizes: $("#pSizes").value.split(",").map((s) => s.trim()).filter(Boolean),
       sort: Number($("#pSort").value) || 0,
       active: $("#pActive").checked
@@ -589,7 +616,7 @@
             <span class="order__code">${esc(o.code || o.id)}</span>
             ${badge(o.store)}
             <span class="pill${o.status === "new" ? " pill--new" : ""}${o.status === "delivered" ? " pill--done" : ""}">${esc(o.status)}</span>
-            ${o.group_code ? '<span class="pill" title="The customer also ordered from the other boutique in the same checkout">Mixed cart</span>' : ""}
+            ${o.group_code ? '<span class="pill" title="The customer also asked about pieces from the other store in the same message">Mixed selection</span>' : ""}
           </div>
           <span class="order__when">${when(o.created_at)}</span>
         </div>

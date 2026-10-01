@@ -76,50 +76,80 @@
   /* groups: [{ store, code, lines, subtotal }]
      details: { name, phone, location, notes, zone, fee, total }
      fmt: money formatter.
-     One boutique  -> one simple table.
-     Both boutiques -> one message, a labelled table per boutique. */
+     The text is an enquiry, not a receipt: the shopper is asking the
+     shop to check availability and hold the pieces.
+     One group  -> one simple list.
+     More groups -> one message, a labelled list per group so the shop
+     can tell which rail each piece comes from. */
   function buildMessage(groups, details, fmt) {
     const who = [
       "Name: " + details.name,
       "Phone: " + details.phone,
-      "Deliver to: " + details.location,
+      "Deliver / collect: " + details.location,
       details.notes ? "Notes: " + details.notes : ""
     ].filter(Boolean);
 
-    const delivery = "Delivery (" + details.zone + "): " + (details.fee ? fmt(details.fee) : "free");
     const items = groups.reduce(function (sum, g) { return sum + g.subtotal; }, 0);
+    const delivery = "Delivery (" + details.zone + "): " + (details.fee ? fmt(details.fee) : "free");
+    const intro = "Hello! I would like to check availability and reserve these items from my saved list:";
 
     if (groups.length === 1) {
       const g = groups[0];
       return [
-        "Order " + g.code + " · " + g.store.name,
+        intro,
         "",
         g.lines.map(function (l) { return lineText(l, fmt); }).join("\n"),
         "",
         "Items: " + fmt(items),
         delivery,
-        "Total: " + fmt(details.total),
+        "Estimated total: " + fmt(details.total),
+        "",
+        "Ref: " + g.code + " · " + g.store.name,
         ""
       ].concat(who).join("\n");
     }
 
-    const parts = [
-      "NEW ORDER · " + groups.length + " boutiques",
-      "Refs: " + groups.map(function (g) { return g.code; }).join(" + "),
-      ""
-    ];
+    const parts = [intro, ""];
     groups.forEach(function (g) {
       parts.push("*" + g.store.name.toUpperCase() + "*");
-      parts.push("Order " + g.code);
       parts.push(g.lines.map(function (l) { return lineText(l, fmt); }).join("\n"));
-      parts.push("Subtotal: " + fmt(g.subtotal));
+      parts.push("Subtotal: " + fmt(g.subtotal) + " · Ref: " + g.code);
       parts.push("");
     });
     parts.push("Items: " + fmt(items));
     parts.push(delivery);
-    parts.push("*TOTAL: " + fmt(details.total) + "*");
+    parts.push("*Estimated total: " + fmt(details.total) + "*");
     parts.push("");
     return parts.concat(who).join("\n");
+  }
+
+  /* One item, asked about straight from its page. */
+  function buildItemMessage(product, size, fmt, link) {
+    return [
+      "Hello! I would like to check availability and reserve this item:",
+      "",
+      "• " + product.name + (size ? " (" + size + ")" : "") + " — " + fmt(product.price),
+      link ? "" : null,
+      link || null
+    ].filter(function (x) { return x !== null; }).join("\n");
+  }
+
+  /* Badges for a product page or card. A staff choice wins:
+       highlight "new" | "best_deal" | "none"
+     With no choice (null) the shop decides by itself:
+       NEW        added in the last 14 days
+       BEST DEAL  20% off or more                                     */
+  function highlights(product, now) {
+    const h = product.highlight;
+    if (h === "none") return [];
+    if (h === "new") return ["NEW"];
+    if (h === "best_deal") return ["BEST DEAL"];
+    const out = [];
+    const born = product.created_at ? new Date(product.created_at).getTime() : NaN;
+    const today = (now || new Date()).getTime();
+    if (!isNaN(born) && today - born <= 14 * 86400000) out.push("NEW");
+    if (discountPct(product.price, product.compare_price) >= 20) out.push("BEST DEAL");
+    return out;
   }
 
   /* 0712 345 678 / +254 712 345 678 / 712345678  ->  254712345678 */
@@ -137,6 +167,8 @@
     groupByStore: groupByStore,
     makeCode: makeCode,
     buildMessage: buildMessage,
+    buildItemMessage: buildItemMessage,
+    highlights: highlights,
     waPhone: waPhone
   };
 });
