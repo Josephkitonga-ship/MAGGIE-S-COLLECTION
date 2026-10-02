@@ -28,6 +28,11 @@
   const MODE = document.body.dataset.store || "";
   const IS_OWNER = MODE === "owner";
   const STORE_MODE = IS_OWNER ? null : MODE;
+  /* The owner desk is view only: sales, discounts and comparisons.
+     Adding products, verifying orders and changing statuses belong to
+     the store admins. The database enforces this too
+     (docs/supabase-owner-readonly.sql); hiding the buttons is just manners. */
+  const CAN_EDIT = !IS_OWNER;
 
   const KEYS_READY =
     window.SUPABASE_URL.indexOf("YOUR-PROJECT-REF") === -1 &&
@@ -176,12 +181,16 @@
       showGate("This account is not on the staff list yet. Ask the owner to add it.");
       return;
     }
+    /* Each sign in opens one desk only:
+         owner.html        owner accounts
+         maggie / david    that store's own admin accounts
+       An owner account is not let into a store desk. */
     const allowed = IS_OWNER
       ? staff.role === "owner"
-      : (staff.role === "owner" || staff.store === MODE);
+      : (staff.role === "store_admin" && staff.store === MODE);
     if (!allowed) {
       await sb.auth.signOut();
-      const own = staff.store ? storeOf(staff.store).name : "the owner desk";
+      const own = staff.role === "owner" ? "the owner desk" : storeOf(staff.store).name + "'s desk";
       showGate("This sign in belongs to " + own + ". Go back to the staff sign in page and choose your own desk.");
       return;
     }
@@ -221,7 +230,9 @@
     $("#who").textContent = me.email + (me.role === "owner" ? " · owner" : "");
     const label = IS_OWNER ? "Owner desk" : storeOf(MODE).name;
     $("#deskName").textContent = label;
-    $("#topStore").textContent = label;
+    $("#deskKind").textContent = IS_OWNER ? "Both boutiques · view only" : "Store desk";
+    $("#topStore").textContent = label + (IS_OWNER ? " · view only" : "");
+    $("#addProduct").hidden = !CAN_EDIT;
     $$("[data-owner-only]").forEach((el) => { el.hidden = !IS_OWNER; });
     setPane(ui.pane);
     loadData();
@@ -383,7 +394,7 @@
         const n = PRODUCTS.filter((p) => p.store === s.slug && p.active).length;
         return `
           <article class="storecard storecard--${esc(s.slug)}">
-            <div class="storecard__top"><b>${esc(s.name)}</b><a href="${esc(s.admin.replace("admin/", ""))}">Open desk</a></div>
+            <div class="storecard__top"><b>${esc(s.name)}</b></div>
             <dl>
               <div><dt>Sales this month</dt><dd>${money(m.sales)}</dd></div>
               <div><dt>Verified orders this month</dt><dd>${m.orders}</dd></div>
@@ -406,7 +417,9 @@
               <div class="row__meta">${esc(o.customer_name)} · ${money(o.subtotal)} · ${when(o.created_at)}</div>
             </div>
             <div class="row__acts" style="grid-column:auto">
-              <button class="mini mini--go" type="button" data-verify="${esc(o.id)}">Verify</button>
+              ${CAN_EDIT
+                ? `<button class="mini mini--go" type="button" data-verify="${esc(o.id)}">Verify</button>`
+                : '<span class="pill pill--wait">Awaiting verification</span>'}
             </div>
           </div>`).join("")
       : '<div class="empty"><b>Nothing waiting</b>New orders that need verifying will appear here.</div>';
@@ -441,16 +454,17 @@
               <span class="pill${p.active ? " pill--new" : ""}">${p.active ? "on the rail" : "hidden"}</span>
             </div>
           </div>
-          <div class="row__acts">
+          ${CAN_EDIT ? `<div class="row__acts">
             <button class="mini" type="button" data-edit="${esc(p.id)}">Edit</button>
             <button class="mini${p.active ? " mini--on" : ""}" type="button" data-toggle="${esc(p.id)}" data-active="${p.active}">${p.active ? "Hide" : "Show"}</button>
             <button class="mini mini--danger" type="button" data-delete="${esc(p.id)}">Delete</button>
-          </div>
+          </div>` : ""}
         </div>`;
     }).join("");
   }
 
   function openSheet(product) {
+    if (!CAN_EDIT) return;
     editingId = product ? product.id : null;
     editingImageUrl = product ? (product.image_url || "") : "";
     editingGallery = product && Array.isArray(product.gallery) ? product.gallery.slice() : [];
@@ -524,6 +538,7 @@
 
   async function saveProduct(event) {
     event.preventDefault();
+    if (!CAN_EDIT) return;
     if (!sb) { note("#sheetMsg", "Add your Supabase keys to js/config.js first.", false); return; }
 
     const price = Number($("#pPrice").value);
@@ -583,6 +598,7 @@
   }
 
   async function toggleProduct(id, isActive) {
+    if (!CAN_EDIT) return;
     const { error } = await sb.from("products").update({ active: !isActive }).eq("id", id);
     if (error) { flash("Could not change that: " + error.message, true); return; }
     flash(isActive ? "Hidden from the rail" : "Back on the rail");
@@ -590,6 +606,7 @@
   }
 
   async function deleteProduct(id) {
+    if (!CAN_EDIT) return;
     const row = PRODUCTS.find((p) => String(p.id) === String(id));
     const name = row ? row.name : "this product";
     if (!window.confirm("Delete " + name + " for good? Hiding it keeps the record instead.")) return;
@@ -636,14 +653,17 @@
         </div>
         ${o.notes ? `<p class="order__note">Notes: ${esc(o.notes)}</p>` : ""}
         <div class="order__acts">
-          ${verified
+          ${CAN_EDIT ? (verified
             ? `<span class="order__stamp">Verified${o.verified_by ? " by " + esc(o.verified_by) : ""} · ${when(o.verified_at)}</span>
                <button class="mini" type="button" data-unverify="${esc(o.id)}">Undo</button>`
-            : `<button class="mini mini--go" type="button" data-verify="${esc(o.id)}">Verify order</button>`}
-          <select class="mini" data-status="${esc(o.id)}" aria-label="Order status">
+            : `<button class="mini mini--go" type="button" data-verify="${esc(o.id)}">Verify order</button>`)
+          : (verified
+            ? `<span class="order__stamp">Verified${o.verified_by ? " by " + esc(o.verified_by) : ""} · ${when(o.verified_at)}</span>`
+            : '<span class="pill pill--wait">Awaiting verification</span>')}
+          ${CAN_EDIT ? `<select class="mini" data-status="${esc(o.id)}" aria-label="Order status">
             ${STATUSES.map((s) => `<option value="${s}"${s === o.status ? " selected" : ""}>${s}</option>`).join("")}
-          </select>
-          ${ORD.waPhone(o.customer_phone).length >= 11 ? `<a class="mini" href="${esc(wa)}" target="_blank" rel="noopener">Message customer</a>` : ""}
+          </select>` : ""}
+          ${CAN_EDIT && ORD.waPhone(o.customer_phone).length >= 11 ? `<a class="mini" href="${esc(wa)}" target="_blank" rel="noopener">Message customer</a>` : ""}
         </div>
       </article>`;
   }
@@ -678,6 +698,7 @@
   }
 
   async function patchOrder(id, patch, message) {
+    if (!CAN_EDIT) return false;
     const { error } = await sb.from("orders").update(patch).eq("id", id);
     if (error) { flash("Could not update: " + error.message, true); return false; }
     const row = ORDERS.find((o) => String(o.id) === String(id));

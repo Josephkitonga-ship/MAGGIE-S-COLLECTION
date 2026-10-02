@@ -430,7 +430,7 @@ ADMIN_CHOOSER = """<!doctype html>
   <div class="doors">
     <a class="door door--maggies" href="maggie.html"><b>Maggie's Collection</b><span>Products, orders and sales for Maggie's</span></a>
     <a class="door door--davids" href="david.html"><b>David's Boutique</b><span>Products, orders and sales for David's</span></a>
-    <a class="door door--owner" href="owner.html"><b>Owner</b><span>Both boutiques, sales and discounts side by side</span></a>
+    <a class="door door--owner" href="owner.html"><b>Owner</b><span>Sales, discounts and orders for both boutiques, view only</span></a>
   </div>
   <p class="gate__links"><a href="../index.html">Back to the shop</a></p>
   <script src="../js/theme.js"></script>
@@ -454,9 +454,9 @@ DESKS = [
     },
     {
         "file": "admin/owner.html", "store": "owner",
-        "title": "Owner desk", "name": "Owner desk", "kind": "Both boutiques",
+        "title": "Owner desk", "name": "Owner desk", "kind": "Both boutiques · view only",
         "gate_title": "Owner desk",
-        "gate_text": "Sign in to see sales, discounts and orders for both boutiques.",
+        "gate_text": "Sign in to see sales, discounts and orders for both boutiques. This desk is view only.",
     },
 ]
 

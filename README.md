@@ -30,6 +30,16 @@ Built by Flynn Technologies.
 - Staff product form: material, dimensions, care, badge choice and extra gallery photos.
 - Run `docs/supabase-product-details.sql` once before using the new staff fields.
 
+## Who can do what
+
+| | read | add / edit products, verify orders |
+|---|---|---|
+| Store admin (Maggie / David) | own store | own store |
+| Owner | both stores | **no, view only** |
+
+Each sign in opens its own desk only. Run `docs/supabase-owner-readonly.sql` once so the database enforces this too.
+Orders cannot be deleted through the app; cancel them instead.
+
 ## Files
 
 ```
