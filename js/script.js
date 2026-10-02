@@ -239,11 +239,7 @@
     if (!cart.length) {
       body.innerHTML = '<div class="state">Your selection is empty. Tap any piece on the rail to save it here.</div>';
     } else {
-      body.innerHTML = groups.map((g) => `
-        <div class="cart-store">
-          <b>${esc(g.store.name)}</b><span>${money(g.subtotal)}</span>
-        </div>
-        ${g.lines.map(lineHTML).join("")}`).join("");
+      body.innerHTML = groups.map((g) => g.lines.map(lineHTML).join("")).join("");
     }
 
     const split = $("#cartSplit");
@@ -342,15 +338,14 @@
     history.replaceState(null, "", location.pathname + (text ? "?" + text : ""));
   }
 
+  /* Customers only get the offers filter. The boutique filter still
+     works from the address (?s=maggies / ?s=davids) but has no buttons,
+     so no store names are shown on the catalogue. */
   function paintSwitch() {
     const box = $("#storeSwitch");
     if (!box) return;
-    const btn = (attrs, active, label, dot) =>
-      `<button class="switch__btn${active ? " is-active" : ""}" type="button" ${attrs}>${dot ? '<span class="switch__dot"></span>' : ""}${esc(label)}</button>`;
     box.innerHTML =
-      btn('data-store="all"', view.store === "all", "All pieces", false) +
-      STORES.map((s) => btn('data-store="' + esc(s.slug) + '"', view.store === s.slug, s.name, true)).join("") +
-      btn("data-offers", view.offers, "On offer", false);
+      `<button class="switch__btn${view.offers ? " is-active" : ""}" type="button" data-offers>On offer</button>`;
   }
 
   function paintCatalogue() {
