@@ -36,7 +36,7 @@ ok("subtotal", groups[0].subtotal === 3200 * 2 + 1000 && groups[1].subtotal === 
 ok("single-store cart makes one group", O.groupByStore([cart[1]], stores).length === 1);
 
 /* --- codes ----------------------------------------------------------- */
-const code = O.makeCode("DB", new Date("2026-09-29T10:00:00Z"), 0.5);
+const code = O.makeCode("DB", new Date(2026, 8, 29, 10, 0, 0), 0.5);
 ok("code shape", /^DB-[0-9]{6}-[0-9]{4}$/.test(code) && code.indexOf("DB-260929-") === 0);
 ok("random codes match the database regex", /^MC-[0-9]{6}-[0-9]{4}$/.test(O.makeCode("MC")));
 

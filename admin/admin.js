@@ -643,7 +643,7 @@
           <select class="mini" data-status="${esc(o.id)}" aria-label="Order status">
             ${STATUSES.map((s) => `<option value="${s}"${s === o.status ? " selected" : ""}>${s}</option>`).join("")}
           </select>
-          <a class="mini" href="${esc(wa)}" target="_blank" rel="noopener">Message customer</a>
+          ${ORD.waPhone(o.customer_phone).length >= 11 ? `<a class="mini" href="${esc(wa)}" target="_blank" rel="noopener">Message customer</a>` : ""}
         </div>
       </article>`;
   }

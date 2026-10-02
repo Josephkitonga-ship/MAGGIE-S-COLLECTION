@@ -27,6 +27,16 @@
     ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY)
     : null;
 
+  /* Real keys but no library: the CDN script was blocked or offline.
+     Showing demo pieces here would let people "order" things that
+     never reach the database, so show nothing and say so instead. */
+  const LIB_MISSING = KEYS_READY && !window.supabase;
+  if (LIB_MISSING) console.error("Supabase library did not load, so the shop cannot reach its database.");
+
+  /* Add ?debug=1 to any page address to see the real database error
+     in the checkout message while testing. */
+  const DEBUG = new URLSearchParams(location.search).get("debug") === "1";
+
   /* Shown only while Supabase keys are still the placeholders. */
   const DEMO_PRODUCTS = [
     { id: "d1", store: "maggies", name: "Amboseli wrap dress", price: 3200, compare_price: 4000, category: "dresses", description: "Cotton wrap with a tie waist.", image_url: "", sizes: ["S", "M", "L"], active: true, sort: 1 },
@@ -52,7 +62,7 @@
   }
 
   async function loadProducts() {
-    if (!sb) return DEMO_PRODUCTS.map((p) => normalise(Object.assign({}, p)));
+    if (!sb) return LIB_MISSING ? [] : DEMO_PRODUCTS.map((p) => normalise(Object.assign({}, p)));
     const { data, error } = await sb
       .from("products")
       .select("*")
@@ -360,7 +370,9 @@
     }
 
     if (!PRODUCTS.length) {
-      wrap.innerHTML = '<div class="state">The rail is empty right now. New stock is added most weeks.</div>';
+      wrap.innerHTML = LIB_MISSING
+        ? '<div class="state">We could not load the rail just now. Check your connection and refresh the page.</div>'
+        : '<div class="state">The rail is empty right now. New stock is added most weeks.</div>';
       return;
     }
     if (!items.length) {
@@ -479,7 +491,13 @@
 
     /* The database prices every line itself (place_checkout in
        docs/supabase-two-stores.sql). We only send ids, sizes and quantities. */
-    if (sb) {
+    if (!sb) {
+      console.error("order not saved: no database connection");
+      if (LIB_MISSING) {
+        msg.className = "form-msg is-bad";
+        msg.textContent = label + " went to WhatsApp, but our desk could not be reached. Please keep your WhatsApp message as your record.";
+      }
+    } else {
       const { error } = await sb.rpc("place_checkout", {
         p_name: details.name,
         p_phone: details.phone,
@@ -497,7 +515,8 @@
       if (error) {
         console.error("order save failed:", error.message);
         msg.className = "form-msg is-bad";
-        msg.textContent += " It did not reach our desk, so the WhatsApp message is your record.";
+        msg.textContent = label + " went to WhatsApp, but it was not saved on our desk. Please keep your WhatsApp message as your record." +
+          (DEBUG ? " [debug: " + error.message + "]" : "");
       }
     }
 
@@ -509,6 +528,30 @@
   }
 
   /* --- product page ---------------------------------------------- */
+
+  /* "Chat to Reserve on WhatsApp" is also written to the desk, so the
+     shop sees every reserve request, not only the ones sent from the
+     saved list. The shopper's name and number are not asked for here,
+     so the record is marked as an enquiry; staff confirm them on WhatsApp. */
+  async function recordEnquiry(product, size) {
+    if (!sb) return;
+    const store = storeOf(product.store);
+    const { error } = await sb.rpc("place_checkout", {
+      p_name: "WhatsApp enquiry",
+      p_phone: "not given",
+      p_location: "Reserve request from product page",
+      p_notes: "Reserve request. Confirm the customer's name and number on WhatsApp.",
+      p_zone: "To be arranged",
+      p_delivery_fee: 0,
+      p_group_code: "",
+      p_orders: [{
+        store: store.slug,
+        code: ORD.makeCode(store.prefix),
+        lines: [{ id: product.id, size: size || "", qty: 1 }]
+      }]
+    });
+    if (error) console.error("enquiry not saved:", error.message);
+  }
 
   /* product.html?id=...  One piece in full: photos, badges, price,
      description, specifications, size buttons and the two actions. */
@@ -633,6 +676,7 @@
           /* opened inside the click, so the browser does not block it */
           window.open(buildWALink(ORD.buildItemMessage(p, chosen, money, location.href)), "_blank");
           note("Opening WhatsApp so we can check this piece for you.", true);
+          recordEnquiry(p, chosen);
         } else {
           addToCart(p.id, chosen);
           note("The WhatsApp line is not live yet, so we saved it to your list instead.", true);

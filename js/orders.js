@@ -62,7 +62,10 @@
   /* MC-260929-4412. `date` and `rand` are injectable for tests. */
   function makeCode(prefix, date, rand) {
     const d = date || new Date();
-    const stamp = d.toISOString().slice(2, 10).replace(/-/g, "");
+    /* the shopper's own calendar day (Kenya time on a Kenyan phone),
+       not UTC, so a 1:30 am order is stamped with today's date */
+    const two = function (n) { return (n < 10 ? "0" : "") + n; };
+    const stamp = String(d.getFullYear()).slice(2) + two(d.getMonth() + 1) + two(d.getDate());
     const tail = Math.floor(1000 + (rand === undefined ? Math.random() : rand) * 9000);
     return prefix + "-" + stamp + "-" + tail;
   }
