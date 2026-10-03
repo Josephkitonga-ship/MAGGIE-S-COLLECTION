@@ -8,13 +8,9 @@ contributes only its own body. Run it from the project root:
 
     python3 build_pages.py
 
-It writes index.html, catalogue.html, delivery.html, size-guide.html,
-404.html and the staff pages:
-
-    admin/admin.html   chooser: which desk are you going to?
-    admin/maggie.html  Maggie's Collection desk
-    admin/david.html   David's Boutique desk
-    admin/owner.html   owner desk, both boutiques
+It writes index.html, catalogue.html, product.html, delivery.html,
+size-guide.html and 404.html. The staff desks live in their own
+repository (MAGGIE-S-ADMIN) and are not part of this site.
 
 Edit this file, never the generated HTML — a rebuild overwrites them.
 """
@@ -131,7 +127,6 @@ SHELL = """<!doctype html>
           <li><a href="{{PREFIX}}delivery.html">Delivery &amp; Holds</a></li>
           <li><a href="{{PREFIX}}size-guide.html">Size Guide</a></li>
           <li><a href="{{PREFIX}}delivery.html#returns">Exchanges &amp; Policy</a></li>
-          <li><a href="{{PREFIX}}admin/admin.html">Staff sign in</a></li>
         </ul>
       </div>
     </div>
@@ -196,269 +191,6 @@ SHELL = """<!doctype html>
 </body>
 </html>
 """
-
-# --------------------------------------------------------------------
-# staff desks
-# --------------------------------------------------------------------
-
-ADMIN_SHELL = """<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>{{DESK_TITLE}} — Maggie's Collection</title>
-<meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#FDF8F3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1E1216" media="(prefers-color-scheme: dark)">
-{{THEME_BOOT}}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Karla:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/styles.css">
-<link rel="stylesheet" href="../css/stores.css">
-<link rel="stylesheet" href="admin.css">
-</head>
-<body class="admin" data-store="{{STORE}}">
-
-<section class="gate" id="gate">
-  <div class="gate__mark gate__mark--{{STORE}}" aria-hidden="true"></div>
-  <h1>{{GATE_TITLE}}</h1>
-  <p>{{GATE_TEXT}}</p>
-  <form id="gateForm" novalidate>
-    <label class="field"><span>Email</span><input id="email" type="email" autocomplete="username" required></label>
-    <label class="field">
-      <span>Password</span>
-      <span class="pw-wrap">
-        <input id="password" type="password" autocomplete="current-password" required>
-        <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password" aria-pressed="false">Show</button>
-      </span>
-    </label>
-    <p class="admin-msg" id="gateMsg"></p>
-    <button class="btn btn--solid btn--wide" type="submit">Sign in</button>
-  </form>
-  <p class="gate__links"><a href="admin.html">Other staff desks</a> · <a href="../index.html">Back to the shop</a></p>
-  <button class="icon-btn gate__theme" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
-</section>
-
-<div class="desk" id="desk" hidden>
-
-  <aside class="side">
-    <div class="side__brand">
-      <span class="side__logo" aria-hidden="true"></span>
-      <div><b id="deskName">{{DESK_NAME}}</b><small id="deskKind">{{DESK_KIND}}</small></div>
-    </div>
-    <nav class="side__nav" id="sideNav" aria-label="Desk sections"></nav>
-    <div class="side__foot">
-      <span class="side__who" id="who"></span>
-      <button class="side__btn" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
-      <a class="side__btn" href="../index.html">View the shop</a>
-      <button class="side__btn" id="signOut" type="button">Sign out</button>
-    </div>
-  </aside>
-
-  <div class="main">
-    <header class="topbar">
-      <div class="topbar__title">
-        <span class="topbar__store" id="topStore"></span>
-        <h1 id="paneTitle">Overview</h1>
-      </div>
-      <div class="topbar__tools">
-        <label class="scope" data-owner-only>
-          <span>Showing</span>
-          <select id="scopeSelect"></select>
-        </label>
-        <button class="mini" id="refreshAll" type="button">Refresh</button>
-        <button class="mini topbar__mobile" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
-        <button class="mini topbar__mobile" id="signOutMobile" type="button">Sign out</button>
-      </div>
-    </header>
-
-    <main class="content">
-      <p class="admin-msg" id="deskMsg"></p>
-
-      <section class="pane is-active" id="pane-overview">
-        <div class="kpis" id="ovKpis"></div>
-        <div class="storecards" id="ovStores" data-owner-only></div>
-        <div class="panel">
-          <div class="panel__head">
-            <h2>Sales, last 14 days</h2>
-            <p class="hint">A sale counts once you verify the order.</p>
-          </div>
-          <div id="ovChart"></div>
-        </div>
-        <div class="panel">
-          <div class="panel__head">
-            <h2>Waiting for verification</h2>
-            <button class="mini" type="button" data-goto="orders">See all orders</button>
-          </div>
-          <div id="ovPending"></div>
-        </div>
-      </section>
-
-      <section class="pane" id="pane-products">
-        <div class="toolbar">
-          <input class="toolbar__search" id="prodSearch" type="search" placeholder="Search products" aria-label="Search products">
-          <button class="btn btn--solid" id="addProduct" type="button">Add product</button>
-        </div>
-        <p class="admin-msg" id="productMsg"></p>
-        <div class="panel panel--flush"><div id="productList"></div></div>
-      </section>
-
-      <section class="pane" id="pane-orders">
-        <div class="toolbar">
-          <input class="toolbar__search" id="orderSearch" type="search" placeholder="Search code, name or phone" aria-label="Search orders">
-          <select class="mini" id="orderStatus" aria-label="Filter by status"></select>
-        </div>
-        <div class="seg" id="verifSwitch" role="group" aria-label="Verification"></div>
-        <p class="admin-msg" id="orderMsg"></p>
-        <div id="orderList"></div>
-      </section>
-
-      <section class="pane" id="pane-stats">
-        <div class="seg" id="periodSwitch" role="group" aria-label="Period"></div>
-        <div class="kpis" id="stKpis"></div>
-        <div class="panel">
-          <div class="panel__head"><h2>Sales by day</h2><p class="hint">Verified orders only.</p></div>
-          <div id="stChart"></div>
-        </div>
-        <div class="panel" id="stCompareWrap" data-owner-only>
-          <div class="panel__head"><h2>Maggie's Collection and David's Boutique side by side</h2></div>
-          <div class="table-scroll" id="stCompare"></div>
-        </div>
-        <div class="two-up">
-          <div class="panel"><div class="panel__head"><h2>Best sellers</h2></div><div id="stTop"></div></div>
-          <div class="panel"><div class="panel__head"><h2>Sales by category</h2></div><div id="stCats"></div></div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <nav class="tabbar" id="tabbar" aria-label="Desk sections"></nav>
-</div>
-
-<aside class="sheet" id="productSheet" aria-label="Product" hidden>
-  <div class="sheet__head">
-    <h2 id="sheetTitle">Add a product</h2>
-    <button class="icon-btn" id="sheetClose" type="button">Close</button>
-  </div>
-  <form class="sheet__body" id="productForm" novalidate>
-    <p class="admin-msg" id="sheetMsg"></p>
-    <label class="field" id="pStoreField" data-owner-only>
-      <span>Boutique</span>
-      <select id="pStore"></select>
-    </label>
-    <label class="field"><span>Name</span><input id="pName" type="text" required></label>
-    <div class="two-col">
-      <label class="field"><span>Selling price (KSh)</span><input id="pPrice" type="number" min="0" step="10" inputmode="numeric" required></label>
-      <label class="field"><span>Marked price (KSh), optional</span><input id="pCompare" type="number" min="0" step="10" inputmode="numeric"></label>
-    </div>
-    <p class="offer-preview" id="pOffer">Add a marked price higher than the selling price to show a discount badge.</p>
-    <div class="two-col">
-      <label class="field"><span>Category</span><select id="pCategory"></select></label>
-      <label class="field"><span>Sort order, lower shows first</span><input id="pSort" type="number" value="0"></label>
-    </div>
-    <label class="field"><span>One line about it</span><input id="pDescription" type="text"></label>
-    <div class="two-col">
-      <label class="field"><span>Material</span><input id="pMaterial" type="text" placeholder="e.g. Cotton blend"></label>
-      <label class="field"><span>Dimensions</span><input id="pDimensions" type="text" placeholder="e.g. Length 68 cm"></label>
-    </div>
-    <label class="field"><span>Care / fabric details</span><input id="pCare" type="text" placeholder="e.g. Cold hand wash, dry in shade"></label>
-    <label class="field">
-      <span>Badge on the shop</span>
-      <select id="pHighlight">
-        <option value="auto">Automatic (NEW for 14 days, BEST DEAL at 20% off)</option>
-        <option value="new">Always NEW</option>
-        <option value="best_deal">Always BEST DEAL</option>
-        <option value="none">No badge</option>
-      </select>
-    </label>
-    <label class="field">
-      <span>Product photo</span>
-      <input id="pImageFile" type="file" accept="image/*">
-    </label>
-    <p class="hint">JPG or PNG, a few MB or less. Leave empty when editing to keep the current photo.</p>
-    <div id="pImagePreviewWrap" hidden><img id="pImagePreview" class="img-preview" alt="Current product photo"></div>
-    <label class="field">
-      <span>More photos for the gallery, optional</span>
-      <input id="pGalleryFiles" type="file" accept="image/*" multiple>
-    </label>
-    <p class="hint" id="pGalleryNote">Pick several at once. They are added to the gallery on the product page.</p>
-    <label class="check" id="pGalleryClearWrap" hidden><input id="pGalleryClear" type="checkbox"><span>Remove the extra photos already saved</span></label>
-    <label class="field">
-      <span>Sizes, separated by commas</span>
-      <input id="pSizes" type="text" placeholder="S, M, L, XL">
-    </label>
-    <p class="hint">Letters (XS&ndash;5XL) for most items · numbers (28&ndash;46) for men's trousers · 2-3Y, 4-5Y &hellip; 14-15Y for kids · Small, Medium, Large, Suitcase for bags</p>
-    <label class="check"><input id="pActive" type="checkbox" checked><span>Show on the rail</span></label>
-    <div class="sheet__acts">
-      <button class="btn btn--solid" id="saveProduct" type="submit">Add product</button>
-      <button class="btn btn--ghost" id="cancelEdit" type="button">Cancel</button>
-    </div>
-  </form>
-</aside>
-<div class="sheet-scrim" id="sheetScrim" hidden></div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<script src="{{SUPABASE_CDN}}"></script>
-<script src="../js/theme.js"></script>
-<script src="../js/config.js"></script>
-<script src="../js/orders.js"></script>
-<script src="admin.js"></script>
-</body>
-</html>
-"""
-
-ADMIN_CHOOSER = """<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Staff sign in — Maggie's Collection</title>
-<meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#FDF8F3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1E1216" media="(prefers-color-scheme: dark)">
-{{THEME_BOOT}}
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Karla:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/styles.css">
-<link rel="stylesheet" href="../css/stores.css">
-<link rel="stylesheet" href="admin.css">
-</head>
-<body class="admin">
-<section class="gate gate--wide">
-  <h1>Staff sign in</h1>
-  <p>Choose your desk. Each one has its own sign in, and you only see what belongs to you.</p>
-  <div class="doors">
-    <a class="door door--maggies" href="maggie.html"><b>Maggie's Collection</b><span>Products, orders and sales for Maggie's</span></a>
-    <a class="door door--davids" href="david.html"><b>David's Boutique</b><span>Products, orders and sales for David's</span></a>
-    <a class="door door--owner" href="owner.html"><b>Owner</b><span>Sales, discounts and orders for both boutiques, view only</span></a>
-  </div>
-  <p class="gate__links"><a href="../index.html">Back to the shop</a></p>
-  <script src="../js/theme.js"></script>
-</section>
-</body>
-</html>
-"""
-
-DESKS = [
-    {
-        "file": "admin/maggie.html", "store": "maggies",
-        "title": "Maggie's desk", "name": "Maggie's Collection", "kind": "Store desk",
-        "gate_title": "Maggie's Collection desk",
-        "gate_text": "Sign in to add products, verify orders and see Maggie's sales.",
-    },
-    {
-        "file": "admin/david.html", "store": "davids",
-        "title": "David's desk", "name": "David's Boutique", "kind": "Store desk",
-        "gate_title": "David's Boutique desk",
-        "gate_text": "Sign in to add products, verify orders and see David's sales.",
-    },
-    {
-        "file": "admin/owner.html", "store": "owner",
-        "title": "Owner desk", "name": "Owner desk", "kind": "Both boutiques · view only",
-        "gate_title": "Owner desk",
-        "gate_text": "Sign in to see sales, discounts and orders for both boutiques. This desk is view only.",
-    },
-]
 
 # --------------------------------------------------------------------
 # page bodies
@@ -888,22 +620,6 @@ def render(page):
     return html
 
 
-def render_desk(desk):
-    html = ADMIN_SHELL
-    for key, value in (
-        ("{{THEME_BOOT}}", THEME_BOOT),
-        ("{{DESK_TITLE}}", desk["title"]),
-        ("{{DESK_NAME}}", desk["name"]),
-        ("{{DESK_KIND}}", desk["kind"]),
-        ("{{GATE_TITLE}}", desk["gate_title"]),
-        ("{{GATE_TEXT}}", desk["gate_text"]),
-        ("{{STORE}}", desk["store"]),
-        ("{{SUPABASE_CDN}}", SUPABASE_CDN),
-    ):
-        html = html.replace(key, value)
-    return html
-
-
 def write(path, text):
     full = os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(full) or ROOT, exist_ok=True)
@@ -915,10 +631,7 @@ def write(path, text):
 def main():
     for page in PAGES:
         write(page["file"], render(page))
-    write("admin/admin.html", ADMIN_CHOOSER.replace("{{THEME_BOOT}}", THEME_BOOT))
-    for desk in DESKS:
-        write(desk["file"], render_desk(desk))
-    print("done — %d pages" % (len(PAGES) + 1 + len(DESKS)))
+    print("done — %d pages" % len(PAGES))
 
 
 if __name__ == "__main__":

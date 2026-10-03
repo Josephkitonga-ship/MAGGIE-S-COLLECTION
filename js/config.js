@@ -29,10 +29,10 @@ const SHOP = {
      name    full name, shown in headings and WhatsApp
      short   shown on the small badge on each product card
      prefix  order codes: MC-260929-4412, DB-260929-1187
-     admin   this boutique's staff desk                              */
+                                                                     */
   stores: [
-    { slug: "maggies", name: "Maggie's Collection", short: "Maggie's", prefix: "MC", admin: "admin/maggie.html" },
-    { slug: "davids",  name: "David's Boutique",    short: "David's",  prefix: "DB", admin: "admin/david.html" }
+    { slug: "maggies", name: "Maggie's Collection", short: "Maggie's", prefix: "MC" },
+    { slug: "davids",  name: "David's Boutique",    short: "David's",  prefix: "DB" }
   ],
 
   /* ---- social buttons --------------------------------------------
@@ -88,7 +88,7 @@ const SHOP = {
   orderPrefix: "MC or DB"
 };
 
-/* Used by script.js and admin.js. Kept on window so plain
+/* Used by script.js. Kept on window so plain
    <script> tags (no modules) can reach them from any page. */
 window.SUPABASE_URL = SUPABASE_URL;
 window.SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;

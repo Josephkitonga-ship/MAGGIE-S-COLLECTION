@@ -13,7 +13,6 @@ Built by Flynn Technologies.
 | Cart | one list | grouped by boutique; delivery charged once |
 | WhatsApp | one message | one boutique = one simple table; both = one message with a labelled table per boutique |
 | Orders | one table | saved per boutique (`MC-…` / `DB-…`), so each desk sees only its own |
-| Admin | one login | `admin/maggie.html`, `admin/david.html`, `admin/owner.html` |
 | Verification | none | manual **Verify order** button; sales count once verified |
 | Social | none | WhatsApp, Facebook, Instagram buttons (header + footer) |
 
@@ -29,6 +28,13 @@ Built by Flynn Technologies.
 - New **Kids & teens** category and an age-based kids size table.
 - Staff product form: material, dimensions, care, badge choice and extra gallery photos.
 - Run `docs/supabase-product-details.sql` once before using the new staff fields.
+
+## Staff desks live in their own repository
+
+The sign in and the three dashboards (Maggie, David, owner) are in **MAGGIE-S-ADMIN**, not here.
+This site no longer has an `admin/` folder or a "Staff sign in" link. Both repositories use the same
+Supabase project. If you rename a boutique or change the categories in `js/config.js`, change them in the
+admin repository's `js/config.js` too.
 
 ## Who can do what
 
@@ -49,9 +55,6 @@ css/stores.css          NEW  store colours, badges, sale prices, filters, social
 js/config.js            stores, social links, WhatsApp number
 js/orders.js            NEW  discount, grouping, WhatsApp message (unit-tested)
 js/script.js            storefront logic
-admin/admin.html        chooser: which desk?
-admin/maggie.html david.html owner.html   the three desks (generated)
-admin/admin.css admin/admin.js            one dashboard, three modes
 docs/supabase-rls.sql          original schema (already run)
 docs/supabase-two-stores.sql   run once after the original
 docs/supabase-product-details.sql   NEW  product page fields; run once after that
