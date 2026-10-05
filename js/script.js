@@ -39,22 +39,28 @@
 
   /* Shown only while Supabase keys are still the placeholders. */
   const DEMO_PRODUCTS = [
-    { id: "d1", store: "maggies", name: "Amboseli wrap dress", price: 3200, compare_price: 4000, category: "dresses", description: "Cotton wrap with a tie waist.", image_url: "", sizes: ["S", "M", "L"], active: true, sort: 1 },
-    { id: "d2", store: "maggies", name: "Sunday pleat midi", price: 3800, category: "dresses", description: "Lined pleats, holds a press.", image_url: "", sizes: ["M", "L", "XL"], active: true, sort: 2 },
-    { id: "d3", store: "maggies", name: "Linen shell top", price: 1450, category: "tops", description: "Breathes through a Kimana afternoon.", image_url: "", sizes: ["S", "M", "L", "XL", "XXL", "3XL"], active: true, sort: 3 },
-    { id: "d6", store: "maggies", name: "Kitenge circle skirt", price: 2400, category: "ankara", description: "Cut and sewn by our tailor.", image_url: "", sizes: ["One size"], active: true, sort: 6 },
-    { id: "d7", store: "maggies", name: "Everyday tote", price: 1950, category: "bags", description: "Fits a laptop and a market run.", image_url: "", sizes: ["Small", "Medium", "Large"], active: true, sort: 7 },
-    { id: "d9", store: "davids", name: "Oxford shirt", price: 2200, compare_price: 2750, category: "menswear", description: "Cotton, holds a collar all day.", image_url: "", sizes: ["M", "L", "XL", "XXL", "3XL"], active: true, sort: 9 },
-    { id: "d10", store: "davids", name: "Chino trouser", price: 2800, category: "menswear", description: "Men's straight leg, numbered waist.", image_url: "", sizes: ["30", "32", "34", "36", "38", "40"], active: true, sort: 10 },
-    { id: "d12", store: "davids", name: "Camo crew sweatshirt", price: 2600, compare_price: 3200, category: "tops", description: "Heavy fleece, embroidered chest.", image_url: "", sizes: ["M", "L", "XL", "XXL"], active: true, sort: 12 },
-    { id: "d8", store: "davids", name: "Block heel sandal", price: 2900, category: "shoes", description: "Steady on a murram road.", image_url: "", sizes: ["36", "37", "38", "39", "40"], active: true, sort: 8 }
+    { id: "d1", store: "maggies", department: "women", name: "Amboseli wrap dress", price: 3200, compare_price: 4000, category: "dresses", description: "Cotton wrap with a tie waist.", image_url: "", sizes: ["S", "M", "L"], active: true, sort: 1 },
+    { id: "d2", store: "maggies", department: "women", name: "Sunday pleat midi", price: 3800, category: "dresses", description: "Lined pleats, holds a press.", image_url: "", sizes: ["M", "L", "XL"], active: true, sort: 2 },
+    { id: "d3", store: "maggies", department: "women", name: "Linen shell top", price: 1450, category: "tops", description: "Breathes through a Kimana afternoon.", image_url: "", sizes: ["S", "M", "L", "XL", "XXL", "3XL"], active: true, sort: 3 },
+    { id: "d6", store: "maggies", department: "women", name: "Kitenge circle skirt", price: 2400, category: "african", description: "Cut and sewn by our tailor.", image_url: "", sizes: ["One size"], active: true, sort: 6 },
+    { id: "d7", store: "maggies", department: "bags", name: "Everyday tote", price: 1950, category: "handbags", description: "Fits a laptop and a market run.", image_url: "", sizes: ["Small", "Medium", "Large"], active: true, sort: 7 },
+    { id: "d9", store: "davids", department: "men", name: "Oxford shirt", price: 2200, compare_price: 2750, category: "tops", description: "Cotton, holds a collar all day.", image_url: "", sizes: ["M", "L", "XL", "XXL", "3XL"], active: true, sort: 9 },
+    { id: "d10", store: "davids", department: "men", name: "Chino trouser", price: 2800, category: "trousers", description: "Straight leg, numbered waist.", image_url: "", sizes: ["30", "32", "34", "36", "38", "40"], active: true, sort: 10 },
+    { id: "d12", store: "davids", department: "men", name: "Camo crew sweatshirt", price: 2600, compare_price: 3500, category: "sweatshirts", description: "Heavy fleece, embroidered chest.", image_url: "", sizes: ["M", "L", "XL", "XXL"], active: true, sort: 12 },
+    { id: "d13", store: "maggies", department: "kids", name: "School-run polo", price: 900, category: "tops", description: "Soft cotton, easy wash.", image_url: "", sizes: ["4-5Y", "6-7Y", "8-9Y"], active: true, sort: 13 },
+    { id: "d8", store: "davids", department: "shoes", name: "Block heel sandal", price: 2900, category: "heels", description: "Steady on a murram road.", image_url: "", sizes: ["36", "37", "38", "39", "40"], active: true, sort: 8 }
   ];
 
   let PRODUCTS = [];
 
   /* Older rows, or a database that has not had the two-store
      migration yet, have no store: they belong to the first boutique. */
+  const DEPTS = SHOP.departments;
+
   function normalise(p) {
+    const placed = ORD.placeProduct(p, DEPTS);
+    p.department = placed.department;
+    p.category = placed.type;
     p.store = STORES.some((s) => s.slug === p.store) ? p.store : STORES[0].slug;
     p.price = Number(p.price);
     p.compare_price = Number(p.compare_price) > p.price ? Number(p.compare_price) : 0;
@@ -90,9 +96,22 @@
       .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
+  function deptName(slug) {
+    const d = DEPTS.find((x) => x.slug === slug);
+    return d ? d.name : (slug || "");
+  }
+
+  /* type slugs are shared between Women, Men and Kids, so one lookup serves all */
   function categoryName(slug) {
-    const found = SHOP.categories.find((c) => c.slug === slug);
-    return found ? found.name : (slug || "Other");
+    for (const d of DEPTS) {
+      const t = d.types.find((x) => x.slug === slug);
+      if (t) return t.name;
+    }
+    return slug || "Other";
+  }
+
+  function isType(slug) {
+    return DEPTS.some((d) => d.types.some((t) => t.slug === slug));
   }
 
   function storeOf(slug) {
@@ -290,7 +309,7 @@
           ${marks.length ? `<span class="badge badge--hot">${esc(marks[0])}</span>` : ""}
         </a>
         <div class="card__body">
-          <p class="card__cat">${esc(categoryName(product.category))}</p>
+          <p class="card__cat">${esc(deptName(product.department))} · ${esc(categoryName(product.category))}</p>
           <h3 class="card__name"><a href="${link}">${esc(product.name)}</a></h3>
           ${product.description ? `<p class="card__desc">${esc(product.description)}</p>` : ""}
           ${picker ? `<label class="field" style="margin:0.4rem 0 0"><span>Size</span>${picker}</label>` : ""}
@@ -320,32 +339,40 @@
 
   /* --- catalogue ------------------------------------------------ */
 
-  /* cat: category slug | "all"   store: store slug | "all"   offers: bool */
-  const view = { cat: "all", store: "all", offers: false };
+  /* dept: department slug | "all"    cat: type slug | "all"
+     store: kept for ?s= links, no buttons    offers / fresh: filters */
+  const view = { dept: "all", cat: "all", store: "all", offers: false, fresh: false };
 
   function visibleProducts() {
     return PRODUCTS.filter((p) =>
+      (view.dept === "all" || p.department === view.dept) &&
       (view.store === "all" || p.store === view.store) &&
-      (!view.offers || ORD.discountPct(p.price, p.compare_price) > 0));
+      (!view.offers || ORD.discountPct(p.price, p.compare_price) > 0) &&
+      (!view.fresh || ORD.isFresh(p)));
   }
 
   function syncUrl() {
     const q = new URLSearchParams();
+    if (view.dept !== "all") q.set("d", view.dept);
     if (view.cat !== "all") q.set("c", view.cat);
     if (view.store !== "all") q.set("s", view.store);
     if (view.offers) q.set("offers", "1");
+    if (view.fresh) q.set("new", "1");
     const text = q.toString();
     history.replaceState(null, "", location.pathname + (text ? "?" + text : ""));
   }
 
-  /* Customers only get the offers filter. The boutique filter still
-     works from the address (?s=maggies / ?s=davids) but has no buttons,
-     so no store names are shown on the catalogue. */
+  /* The top row: the departments, then the two filters. */
   function paintSwitch() {
     const box = $("#storeSwitch");
     if (!box) return;
+    const btn = (attrs, active, label) =>
+      `<button class="switch__btn${active ? " is-active" : ""}" type="button" ${attrs}>${esc(label)}</button>`;
     box.innerHTML =
-      `<button class="switch__btn${view.offers ? " is-active" : ""}" type="button" data-offers>On offer</button>`;
+      btn('data-dept="all"', view.dept === "all", "All") +
+      DEPTS.map((d) => btn('data-dept="' + esc(d.slug) + '"', view.dept === d.slug, d.name)).join("") +
+      btn("data-fresh", view.fresh, "New arrivals") +
+      btn("data-offers", view.offers, "On offer");
   }
 
   function paintCatalogue() {
@@ -354,14 +381,25 @@
 
     paintSwitch();
     const items = visibleProducts();
-    const used = SHOP.categories.filter((cat) => items.some((p) => p.category === cat.slug));
-    if (view.cat !== "all" && !used.some((c) => c.slug === view.cat)) view.cat = "all";
+
+    /* the types that actually have stock right now, in department order */
+    const used = [];
+    DEPTS.forEach((d) => {
+      d.types.forEach((t) => {
+        if (items.some((p) => p.department === d.slug && p.category === t.slug) && !used.some((u) => u.slug === t.slug)) {
+          used.push({ slug: t.slug, name: t.name });
+        }
+      });
+    });
+    if (view.cat !== "all" && !used.some((u) => u.slug === view.cat)) view.cat = "all";
 
     const chips = $("#chips");
     if (chips) {
-      chips.innerHTML = [{ slug: "all", name: "Everything" }].concat(used).map((cat) =>
-        `<button class="chip${cat.slug === view.cat ? " is-active" : ""}" type="button" data-slug="${esc(cat.slug)}">${esc(cat.name)}</button>`
-      ).join("");
+      chips.innerHTML = used.length > 1
+        ? [{ slug: "all", name: "Everything" }].concat(used).map((t) =>
+            `<button class="chip${t.slug === view.cat ? " is-active" : ""}" type="button" data-slug="${esc(t.slug)}">${esc(t.name)}</button>`
+          ).join("")
+        : "";
     }
 
     if (!PRODUCTS.length) {
@@ -371,32 +409,42 @@
       return;
     }
     if (!items.length) {
-      wrap.innerHTML = view.offers
-        ? '<div class="state">No offers here today. Tap On offer again to see everything.</div>'
-        : '<div class="state">Nothing here today. Tap All pieces to see the full rail.</div>';
+      wrap.innerHTML = view.offers || view.fresh
+        ? '<div class="state">Nothing matches that filter today. Tap it again, or tap All, to see the full rail.</div>'
+        : '<div class="state">Nothing here today. Tap All to see the full rail.</div>';
       return;
     }
 
-    const shown = view.cat === "all" ? used : used.filter((c) => c.slug === view.cat);
-    wrap.innerHTML = shown.map((cat) => {
-      const list = items.filter((p) => p.category === cat.slug);
-      return `
-        <section class="cat-block" id="cat-${esc(cat.slug)}">
-          <div class="cat-block__head">
-            <h2>${esc(cat.name)}</h2>
-            <span class="cat-block__count">${list.length} ${list.length === 1 ? "piece" : "pieces"}</span>
-          </div>
-          <div class="grid">${list.map(cardHTML).join("")}</div>
-        </section>`;
-    }).join("");
+    const filtered = view.cat === "all" ? items : items.filter((p) => p.category === view.cat);
+    let groups;
+    if (view.dept === "all") {
+      /* every department, each with its own heading */
+      groups = DEPTS.map((d) => ({ id: "dept-" + d.slug, title: d.name, list: filtered.filter((p) => p.department === d.slug) }));
+    } else {
+      /* one department, split by type */
+      const dep = DEPTS.find((d) => d.slug === view.dept);
+      const known = dep.types.map((t) => t.slug);
+      groups = dep.types.map((t) => ({ id: "cat-" + t.slug, title: t.name, list: filtered.filter((p) => p.category === t.slug) }));
+      groups.push({ id: "cat-other", title: "More", list: filtered.filter((p) => known.indexOf(p.category) === -1) });
+    }
+    groups = groups.filter((g) => g.list.length);
+
+    wrap.innerHTML = groups.map((g) => `
+      <section class="cat-block" id="${esc(g.id)}">
+        <div class="cat-block__head">
+          <h2>${esc(g.title)}</h2>
+          <span class="cat-block__count">${g.list.length} ${g.list.length === 1 ? "piece" : "pieces"}</span>
+        </div>
+        <div class="grid">${g.list.map(cardHTML).join("")}</div>
+      </section>`).join("");
 
     spyCategories();
   }
 
   let spy = null;
-  /* Scroll-spy keeps the sticky chip in step with the rail you are in. */
+  /* Scroll-spy keeps the type chip in step with the section you are in. */
   function spyCategories() {
-    const blocks = $$(".cat-block");
+    const blocks = $$('.cat-block[id^="cat-"]');
     if (spy) spy.disconnect();
     if (!blocks.length || !window.IntersectionObserver) return;
     spy = new IntersectionObserver((entries) => {
@@ -567,22 +615,23 @@
     const marks = ORD.highlights(p);
     const sizes = Array.isArray(p.sizes) ? p.sizes : [];
     const images = [p.image_url].concat(Array.isArray(p.gallery) ? p.gallery : []).filter(Boolean);
-    const cat = SHOP.categories.find((c) => c.slug === p.category);
     const specs = [
       ["Material", p.material],
       ["Dimensions", p.dimensions],
       ["Care / fabric", p.care],
-      ["Category", categoryName(p.category)],
+      ["Department", deptName(p.department)],
+      ["Type", categoryName(p.category)],
       ["Sizes", sizes.join(", ")]
     ].filter((row) => row[1]);
     const hasDetail = !!(p.material || p.dimensions || p.care);
-    const related = PRODUCTS.filter((x) => x.category === p.category && String(x.id) !== String(p.id)).slice(0, 4);
+    const related = PRODUCTS.filter((x) => x.department === p.department && x.category === p.category && String(x.id) !== String(p.id)).slice(0, 4);
     let chosen = sizes.length === 1 ? sizes[0] : "";
 
     root.innerHTML = `
       <nav class="crumbs" aria-label="Breadcrumb">
         <a href="catalogue.html">Catalogue</a><span aria-hidden="true">/</span>
-        <a href="catalogue.html?c=${esc(p.category)}">${esc(categoryName(p.category))}</a><span aria-hidden="true">/</span>
+        <a href="catalogue.html?d=${esc(p.department)}">${esc(deptName(p.department))}</a><span aria-hidden="true">/</span>
+        <a href="catalogue.html?d=${esc(p.department)}&amp;c=${esc(p.category)}">${esc(categoryName(p.category))}</a><span aria-hidden="true">/</span>
         <span>${esc(p.name)}</span>
       </nav>
       <div class="pdp">
@@ -631,7 +680,7 @@
       </div>
       ${related.length ? `
       <section class="pdp__related">
-        <h2>More from ${esc(cat ? cat.name : "this rail")}</h2>
+        <h2>More ${esc(categoryName(p.category).toLowerCase())}</h2>
         <div class="grid">${related.map(cardHTML).join("")}</div>
       </section>` : ""}`;
 
@@ -880,8 +929,11 @@
         if (!btn) return;
         if (btn.hasAttribute("data-offers")) {
           view.offers = !view.offers;
+        } else if (btn.hasAttribute("data-fresh")) {
+          view.fresh = !view.fresh;
         } else {
-          view.store = btn.dataset.store;
+          view.dept = btn.dataset.dept;
+          view.cat = "all";
         }
         syncUrl();
         paintCatalogue();
@@ -917,11 +969,25 @@
 
     if ($("#catalogue")) {
       const q = new URLSearchParams(location.search);
-      const c = q.get("c") || "all";
-      const s = q.get("s") || "all";
-      view.cat = c === "all" || SHOP.categories.some((x) => x.slug === c) ? c : "all";
-      view.store = s === "all" || STORES.some((x) => x.slug === s) ? s : "all";
+      let d = q.get("d") || "all";
+      let c = q.get("c") || "all";
+      if (!DEPTS.some((x) => x.slug === d)) d = "all";
+      if (c !== "all") {
+        if (DEPTS.some((x) => x.slug === c)) {
+          /* an old link such as ?c=kids or ?c=menswear names a department */
+          if (d === "all") d = c;
+          c = "all";
+        } else if (!isType(c)) {
+          const old = ORD.LEGACY[c];
+          if (old) { if (d === "all") d = old[0]; c = old[1]; } else { c = "all"; }
+        }
+      }
+      const st = q.get("s") || "all";
+      view.dept = d;
+      view.cat = c;
+      view.store = st === "all" || STORES.some((x) => x.slug === st) ? st : "all";
       view.offers = q.get("offers") === "1";
+      view.fresh = q.get("new") === "1";
       paintCatalogue();
     }
   }

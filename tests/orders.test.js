@@ -80,6 +80,24 @@ ok("10% off is not", O.highlights({ price: 2650, compare_price: 2950, created_at
 ok("staff choice wins: best_deal", O.highlights({ price: 100, highlight: "best_deal", created_at: "2020-01-01T00:00:00Z" }, now).join() === "BEST DEAL");
 ok("staff choice wins: none hides NEW", O.highlights({ price: 100, highlight: "none", created_at: "2026-10-09T00:00:00Z" }, now).length === 0);
 
+/* --- departments ------------------------------------------------------------ */
+const depts = [
+  { slug: "women", types: [{ slug: "dresses" }, { slug: "tops" }] },
+  { slug: "men", types: [{ slug: "tops" }] },
+  { slug: "kids", types: [{ slug: "tops" }] }
+];
+const pp = (p) => JSON.stringify(O.placeProduct(p, depts));
+ok("product with a department keeps it", pp({ department: "men", category: "tops" }) === '{"department":"men","type":"tops"}');
+ok("old menswear row becomes men / tops", pp({ category: "menswear" }) === '{"department":"men","type":"tops"}');
+ok("old ankara row becomes women / african", pp({ category: "ankara" }) === '{"department":"women","type":"african"}');
+ok("old bottoms row becomes women / trousers", pp({ category: "bottoms" }) === '{"department":"women","type":"trousers"}');
+ok("old kids row becomes kids / tops", pp({ category: "kids" }) === '{"department":"kids","type":"tops"}');
+ok("unknown department falls back to the first", pp({ department: "nope", category: "mystery" }) === '{"department":"women","type":"mystery"}');
+const fnow = new Date("2026-10-10T00:00:00Z");
+ok("added 3 days ago is fresh", O.isFresh({ created_at: "2026-10-07T00:00:00Z" }, fnow));
+ok("added 30 days ago is not fresh", !O.isFresh({ created_at: "2026-09-10T00:00:00Z" }, fnow));
+ok("no date is not fresh", !O.isFresh({}, fnow));
+
 /* --- phones ---------------------------------------------------------------------- */
 ok("07 form", O.waPhone("0712 345 678") === "254712345678");
 ok("+254 form", O.waPhone("+254 712 345 678") === "254712345678");

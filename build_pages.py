@@ -10,7 +10,7 @@ contributes only its own body. Run it from the project root:
 
 It writes index.html, catalogue.html, product.html, delivery.html,
 size-guide.html and 404.html. The staff desks live in their own
-repository (MAGGIE-S-ADMIN) and are not part of this site.
+repository (MAGGIES-ADMIN) and are not part of this site.
 
 Edit this file, never the generated HTML — a rebuild overwrites them.
 """
@@ -114,10 +114,11 @@ SHELL = """<!doctype html>
       <div>
         <h4>Shop</h4>
         <ul class="foot-list">
-          <li><a href="{{PREFIX}}catalogue.html?c=dresses">Women's dresses</a></li>
-          <li><a href="{{PREFIX}}catalogue.html?c=menswear">Menswear</a></li>
-          <li><a href="{{PREFIX}}catalogue.html?c=kids">Kids &amp; teens</a></li>
-          <li><a href="{{PREFIX}}catalogue.html?c=shoes">Shoes</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?d=women">Women</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?d=men">Men</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?d=kids">Kids &amp; teens</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?d=shoes">Shoes</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?new=1">New arrivals</a></li>
           <li><a href="{{PREFIX}}catalogue.html?offers=1">On offer</a></li>
         </ul>
       </div>
@@ -219,19 +220,19 @@ INDEX_BODY = """
     <h2>One Message Covers the Family</h2>
     <p>Find women&rsquo;s collections, menswear, and kids&rsquo; outfits side by side. Select everything your family needs and send us one quick WhatsApp message to hold your pieces or deliver to town.</p>
     <div class="boutiques boutiques--three">
-      <a class="boutique boutique--maggies" href="catalogue.html?c=dresses">
+      <a class="boutique boutique--maggies" href="catalogue.html?d=women">
         <img class="boutique__photo" src="images/women.jpg" alt="" loading="lazy" onerror="this.remove()">
         <h3>Women</h3>
-        <p>Dresses, tops, Ankara and bags.</p>
+        <p>Dresses, tops, African wear and more.</p>
         <span class="boutique__go">Shop women&rsquo;s</span>
       </a>
-      <a class="boutique boutique--davids" href="catalogue.html?c=menswear">
+      <a class="boutique boutique--davids" href="catalogue.html?d=men">
         <img class="boutique__photo" src="images/men.jpg" alt="" loading="lazy" onerror="this.remove()">
         <h3>Men</h3>
-        <p>Shirts, trousers, layers and shoes.</p>
+        <p>Shirts, trousers, jackets and suits.</p>
         <span class="boutique__go">Shop menswear</span>
       </a>
-      <a class="boutique boutique--kids" href="catalogue.html?c=kids">
+      <a class="boutique boutique--kids" href="catalogue.html?d=kids">
         <img class="boutique__photo" src="images/kids.jpg" alt="" loading="lazy" onerror="this.remove()">
         <h3>Kids &amp; teens</h3>
         <p>Everyday and occasion outfits.</p>
@@ -272,14 +273,12 @@ INDEX_BODY = """
   <div class="wrap">
     <h2>Browse by rail</h2>
     <div class="grid" style="margin-top:1.2rem">
-      <a class="card" href="catalogue.html?c=dresses"><div class="card__body"><h3 class="card__name">Dresses</h3><p class="card__desc">Church, office and occasion.</p></div></a>
-      <a class="card" href="catalogue.html?c=tops"><div class="card__body"><h3 class="card__name">Tops and shirts</h3><p class="card__desc">Everyday layers for anyone.</p></div></a>
-      <a class="card" href="catalogue.html?c=bottoms"><div class="card__body"><h3 class="card__name">Trousers and skirts</h3><p class="card__desc">Cuts that hold their shape.</p></div></a>
-      <a class="card" href="catalogue.html?c=menswear"><div class="card__body"><h3 class="card__name">Menswear</h3><p class="card__desc">Shirts, trousers, jackets.</p></div></a>
-      <a class="card" href="catalogue.html?c=kids"><div class="card__body"><h3 class="card__name">Kids &amp; teens</h3><p class="card__desc">Everyday and occasion outfits.</p></div></a>
-      <a class="card" href="catalogue.html?c=ankara"><div class="card__body"><h3 class="card__name">Ankara and prints</h3><p class="card__desc">Tailored here in Kimana.</p></div></a>
-      <a class="card" href="catalogue.html?c=bags"><div class="card__body"><h3 class="card__name">Bags</h3><p class="card__desc">Carry-everything to going-out.</p></div></a>
-      <a class="card" href="catalogue.html?c=shoes"><div class="card__body"><h3 class="card__name">Shoes</h3><p class="card__desc">Flats, heels and sandals.</p></div></a>
+      <a class="card" href="catalogue.html?d=women"><div class="card__body"><h3 class="card__name">Women</h3><p class="card__desc">Dresses, tops, skirts, African wear.</p></div></a>
+      <a class="card" href="catalogue.html?d=men"><div class="card__body"><h3 class="card__name">Men</h3><p class="card__desc">Shirts, trousers, jackets, suits.</p></div></a>
+      <a class="card" href="catalogue.html?d=kids"><div class="card__body"><h3 class="card__name">Kids &amp; teens</h3><p class="card__desc">Everyday and occasion outfits.</p></div></a>
+      <a class="card" href="catalogue.html?d=shoes"><div class="card__body"><h3 class="card__name">Shoes</h3><p class="card__desc">Sandals, heels, flats, sneakers.</p></div></a>
+      <a class="card" href="catalogue.html?d=bags"><div class="card__body"><h3 class="card__name">Bags</h3><p class="card__desc">Handbags, backpacks, travel.</p></div></a>
+      <a class="card" href="catalogue.html?d=accessories"><div class="card__body"><h3 class="card__name">Accessories</h3><p class="card__desc">Jewellery, belts, scarves, caps.</p></div></a>
     </div>
   </div>
 </section>
@@ -300,7 +299,7 @@ CATALOGUE_BODY = """
 <section class="section--tight">
   <div class="wrap">
     <h1 style="margin-top:1.5rem">The rail today</h1>
-    <p>Everything below is in the shop right now: womenswear, menswear and kids&rsquo; outfits side by side. Tap a piece to see it in full, pick a size, save it to your list, and send us one WhatsApp message to hold it.</p>
+    <p>Everything below is in the shop right now. Pick a department, then a type, or tap New arrivals or On offer. Tap a piece to see it in full, pick a size, save it to your list, and send us one WhatsApp message to hold it.</p>
   </div>
   <div class="filters">
     <div class="wrap">

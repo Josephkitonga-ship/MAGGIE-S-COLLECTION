@@ -29,9 +29,21 @@ Built by Flynn Technologies.
 - Staff product form: material, dimensions, care, badge choice and extra gallery photos.
 - Run `docs/supabase-product-details.sql` once before using the new staff fields.
 
+## Departments and types
+
+Products are filed in two levels, set by staff in the desk:
+**Department** (Women, Men, Kids & teens, Shoes, Bags, Accessories) and **Type** inside it
+(Dresses, Tops & shirts, Trousers & jeans, Skirts, Jackets & coats, Sweatshirts & hoodies,
+Suits & formalwear, Activewear, Sleepwear & underwear, African wear; Sandals, Heels, Flats,
+Sneakers, Formal shoes; Handbags, Backpacks, Travel; Jewellery, Belts, Scarves, Caps, Watches, Sunglasses).
+The catalogue's top row is the departments plus **New arrivals** (added in the last 14 days) and **On offer**.
+Old links keep working: `?c=menswear` opens Men, `?c=kids` opens Kids, `?c=ankara` opens Women > African wear.
+The lists live in `SHOP.departments` in `js/config.js`; the admin repository has its own copy, so change both.
+Run `docs/supabase-departments.sql` once; it moves existing products into departments.
+
 ## Staff desks live in their own repository
 
-The sign in and the three dashboards (Maggie, David, owner) are in **MAGGIE-S-ADMIN**, not here.
+The sign in and the three dashboards (Maggie, David, owner) are in **MAGGIES-ADMIN**, not here.
 This site no longer has an `admin/` folder or a "Staff sign in" link. Both repositories use the same
 Supabase project. If you rename a boutique or change the categories in `js/config.js`, change them in the
 admin repository's `js/config.js` too.

@@ -15,6 +15,20 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const WHATSAPP_NUMBER = "254708155891";
 const WHATSAPP_PLACEHOLDER = "254700000000";
 
+/* One list of clothing types, used by Women, Men and Kids & teens. */
+const CLOTHING_TYPES = [
+  { slug: "dresses", name: "Dresses" },
+  { slug: "tops", name: "Tops & shirts" },
+  { slug: "trousers", name: "Trousers & jeans" },
+  { slug: "skirts", name: "Skirts" },
+  { slug: "jackets", name: "Jackets & coats" },
+  { slug: "sweatshirts", name: "Sweatshirts & hoodies" },
+  { slug: "suits", name: "Suits & formalwear" },
+  { slug: "activewear", name: "Activewear" },
+  { slug: "sleepwear", name: "Sleepwear & underwear" },
+  { slug: "african", name: "African wear" }
+];
+
 const SHOP = {
   name: "Maggie's Collection",
   tagline: "Quality fashion for the whole family in Kimana",
@@ -63,16 +77,28 @@ const SHOP = {
     { zone: "Nairobi and the rest of Kenya", fee: 400, eta: "2–3 days by courier" }
   ],
   returnWindowDays: 3,
-  categories: [
-    { slug: "dresses", name: "Dresses", blurb: "Church, office and occasion" },
-    { slug: "tops", name: "Tops & shirts", blurb: "Everyday layers for anyone" },
-    { slug: "bottoms", name: "Trousers & skirts", blurb: "Cuts that hold their shape" },
-    { slug: "menswear", name: "Menswear", blurb: "Shirts, trousers, jackets" },
-    { slug: "kids", name: "Kids & teens", blurb: "Everyday and occasion outfits" },
-    { slug: "ankara", name: "Ankara & prints", blurb: "Tailored in Kimana, any body" },
-    { slug: "bags", name: "Bags", blurb: "Carry-everything to going-out" },
-    { slug: "shoes", name: "Shoes", blurb: "Flats, heels, sandals, boots" },
-    { slug: "accessories", name: "Accessories", blurb: "Jewellery, scarves, belts, caps" }
+  /* ---- how products are grouped ---------------------------------
+     department: who or what it is for (stored on each product)
+     types:      what the piece is, inside that department
+     Never rename a slug once products use it. Add new types freely.   */
+  departments: [
+    { slug: "women", name: "Women", types: CLOTHING_TYPES },
+    { slug: "men", name: "Men", types: CLOTHING_TYPES },
+    { slug: "kids", name: "Kids & teens", types: CLOTHING_TYPES },
+    { slug: "shoes", name: "Shoes", types: [
+      { slug: "sandals", name: "Sandals" }, { slug: "heels", name: "Heels" },
+      { slug: "flats", name: "Flats" }, { slug: "sneakers", name: "Sneakers" },
+      { slug: "formal-shoes", name: "Formal shoes" }
+    ] },
+    { slug: "bags", name: "Bags", types: [
+      { slug: "handbags", name: "Handbags" }, { slug: "backpacks", name: "Backpacks" },
+      { slug: "travel", name: "Travel & suitcases" }
+    ] },
+    { slug: "accessories", name: "Accessories", types: [
+      { slug: "jewellery", name: "Jewellery" }, { slug: "belts", name: "Belts" },
+      { slug: "scarves", name: "Scarves" }, { slug: "caps", name: "Caps & hats" },
+      { slug: "watches", name: "Watches" }, { slug: "sunglasses", name: "Sunglasses" }
+    ] }
   ],
   /* Sizing is not one-size-fits-all-categories. Each product picks
      from whichever set actually matches how it's cut and sold. */
