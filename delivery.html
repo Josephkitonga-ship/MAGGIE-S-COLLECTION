@@ -11,8 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
-<link rel="stylesheet" href="css/stores.css">
+<link rel="stylesheet" href="css/styles.css?v=202610060534">
+<link rel="stylesheet" href="css/stores.css?v=202610060534">
 
 </head>
 <body>
@@ -20,27 +20,47 @@
 
 <header class="site-head">
   <div class="wrap site-head__bar">
+    <button class="icon-btn menu-trigger" id="burger" type="button" aria-label="Toggle Navigation" aria-expanded="false" aria-controls="navDrawer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
     <a class="brand" href="index.html">
       <span class="brand__name">Maggie's Collection</span>
       <span class="brand__note">Kimana Town</span>
     </a>
-    <nav class="nav" id="nav" aria-label="Main">
+    <nav class="nav-inline" aria-label="Main">
       <a href="index.html">Home</a>
       <a href="catalogue.html">Catalogue</a>
       <a href="delivery.html" aria-current="page">Delivery &amp; Holds</a>
       <a href="size-guide.html">Size Guide</a>
-      <a href="#saved" data-open-saved>Saved Items</a>
     </nav>
     <div class="head-tools">
       <div class="social social--head"><a class="social__btn" data-social="whatsapp" href="#" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-8.2 14.3L2.5 21.5l4.8-1.2A9.5 9.5 0 1 0 12 2.5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.6 7.9c-.3.3-.6.9-.5 1.6.3 2.1 2.9 4.9 5.2 5.4.7.2 1.4-.2 1.7-.6l.3-.6-1.7-1-.9.7c-.9-.3-2-1.3-2.4-2.2l.7-.9-1-1.7z" fill="currentColor"/></svg></a><a class="social__btn" data-social="facebook" href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 21v-8h2.7l.4-3.2h-3.1V7.9c0-.9.3-1.5 1.6-1.5h1.6V3.5c-.3 0-1.2-.1-2.4-.1-2.4 0-4 1.4-4 4.1v2.3H7.7V13h2.7v8z" fill="currentColor"/></svg></a><a class="social__btn" data-social="instagram" href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor"/></svg></a></div>
-      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
-      <button class="icon-btn js-cart-open" type="button" aria-label="Open your saved items">
-        Saved <span class="cart-count">0</span>
+      <button class="icon-btn cart-btn js-cart-open" type="button" aria-label="Open your saved items">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+        <span class="cart-count" hidden>0</span>
       </button>
-      <button class="icon-btn burger" id="burger" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
     </div>
   </div>
 </header>
+
+<div class="nav-scrim" id="navScrim"></div>
+<aside class="nav-drawer" id="navDrawer" aria-label="Navigation">
+  <div class="nav-drawer__head">
+    <span class="brand__name">Maggie's Collection</span>
+    <button class="icon-btn menu-trigger" id="navClose" type="button" aria-label="Close navigation">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <nav class="nav-drawer__links" id="nav" aria-label="Main">
+      <a href="index.html">Home</a>
+      <a href="catalogue.html">Catalogue</a>
+      <a href="delivery.html" aria-current="page">Delivery &amp; Holds</a>
+      <a href="size-guide.html">Size Guide</a>
+  </nav>
+  <div class="nav-drawer__foot">
+    <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
+  </div>
+</aside>
 
 <main id="main">
 <section class="section--tight">
@@ -107,7 +127,9 @@
           <li><a href="catalogue.html?d=women">Women</a></li>
           <li><a href="catalogue.html?d=men">Men</a></li>
           <li><a href="catalogue.html?d=kids">Kids &amp; teens</a></li>
+          <li><a href="catalogue.html?d=unisex">Unisex</a></li>
           <li><a href="catalogue.html?d=shoes">Shoes</a></li>
+          <li><a href="catalogue.html?d=home">Home &amp; Living</a></li>
           <li><a href="catalogue.html?new=1">New arrivals</a></li>
           <li><a href="catalogue.html?offers=1">On offer</a></li>
         </ul>
@@ -174,10 +196,10 @@
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/theme.js"></script>
-<script src="js/config.js"></script>
-<script src="js/orders.js"></script>
-<script src="js/faq.js"></script>
-<script src="js/script.js"></script>
+<script src="js/theme.js?v=202610060534"></script>
+<script src="js/config.js?v=202610060534"></script>
+<script src="js/orders.js?v=202610060534"></script>
+<script src="js/faq.js?v=202610060534"></script>
+<script src="js/script.js?v=202610060534"></script>
 </body>
 </html>

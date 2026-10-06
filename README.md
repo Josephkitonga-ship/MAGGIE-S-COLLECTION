@@ -32,7 +32,7 @@ Built by Flynn Technologies.
 ## Departments and types
 
 Products are filed in two levels, set by staff in the desk:
-**Department** (Women, Men, Kids & teens, Shoes, Bags, Accessories) and **Type** inside it
+**Department** (Women, Men, Kids & teens, Unisex, Shoes, Bags, Accessories, Home & Living) and **Type** inside it
 (Dresses, Tops & shirts, Trousers & jeans, Skirts, Jackets & coats, Sweatshirts & hoodies,
 Suits & formalwear, Activewear, Sleepwear & underwear, African wear; Sandals, Heels, Flats,
 Sneakers, Formal shoes; Handbags, Backpacks, Travel; Jewellery, Belts, Scarves, Caps, Watches, Sunglasses).

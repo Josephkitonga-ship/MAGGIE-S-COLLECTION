@@ -224,3 +224,134 @@ a.card__media { display: block; color: inherit; }
 
 /* New arrivals filter */
 .switch__btn[data-fresh].is-active { background: var(--hot); border-color: var(--hot); }
+
+/* ===========================================================
+   Product cards: ONE size for every piece.
+   Landscape photo (4:3), then fixed slots: price + discount pill,
+   marked price, two-line name, department, size, button. A slot with
+   nothing in it keeps its space, so a card with a discount, a long
+   name or no sizes is exactly as tall as any other.
+   Two to a row on a phone, about five across on a wide screen.
+   =========================================================== */
+
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.grid { gap: 0.6rem; }
+@media (min-width: 620px) {
+  .grid { gap: 0.8rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); }
+}
+
+.card--product { border-radius: 14px; height: 100%; }
+.card--product .card__media { aspect-ratio: 4 / 3; flex: 0 0 auto; }
+.card--product .card__body { padding: 0.6rem 0.65rem 0.7rem; gap: 0; flex: 1; }
+
+.card--product .card__priceline { display: flex; align-items: center; gap: 0.4rem; min-height: 1.7rem; flex-wrap: nowrap; }
+.card--product .price-now { font-family: var(--display); font-weight: 600; font-size: 1.15rem; line-height: 1.1; color: var(--plum); white-space: nowrap; }
+.card--product .price-now.is-sale { color: var(--sale-ink); }
+.card--product .badge { font-size: 0.66rem; padding: 0.22rem 0.5rem; }
+.card--product .price-was { display: block; font-size: 0.82rem; line-height: 1.3; min-height: 1.3em; color: var(--ink-soft); text-decoration: line-through; }
+.card--product .price-was--empty { text-decoration: none; }
+
+.card--product .card__name {
+  margin: 0.2rem 0 0; font-size: 1rem; line-height: 1.25; min-height: 2.5em;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card--product .card__cat { margin: 0.15rem 0 0; font-size: 0.74rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.card--product .card__size { display: block; height: 2.1rem; margin: 0.4rem 0 0.5rem; }
+.card--product .card__size select { height: 100%; padding: 0 0.5rem; font-size: 0.82rem; }
+.card--product .card__size--empty { visibility: hidden; }
+
+.card--product .btn { width: 100%; height: 2.3rem; margin-top: auto; padding: 0 0.6rem; font-size: 0.82rem; }
+
+/* the home page "new on the rail" strip uses the same cards */
+.rail { grid-auto-columns: minmax(168px, 46vw); gap: 0.7rem; align-items: stretch; }
+@media (min-width: 720px) { .rail { grid-auto-columns: minmax(190px, 21%); } }
+
+/* ===========================================================
+   Header: hamburger (left), bag with count (right), and the
+   slide-out navigation drawer that now holds the theme switch.
+   =========================================================== */
+
+:root {
+  --accent: var(--cta);       /* count badge fill        */
+  --accent-ink: var(--white); /* text on the count badge */
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+}
+
+.site-head__bar { gap: 0.6rem; }
+.site-head .brand { margin-right: auto; }
+
+.menu-trigger, .cart-btn {
+  width: 2.5rem; height: 2.5rem; padding: 0; justify-content: center; border-radius: 12px; flex: 0 0 auto;
+}
+.menu-trigger svg, .cart-btn svg {
+  width: 1.3rem; height: 1.3rem; fill: none; stroke: currentColor;
+  stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+
+.cart-btn { position: relative; }
+.cart-btn .cart-count {
+  position: absolute; top: 2px; right: 2px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  font-size: 0.625rem; font-weight: 700; line-height: 16px; text-align: center;
+  background: var(--accent); color: var(--accent-ink); border-radius: 999px;
+}
+.cart-count[hidden] { display: none; }
+
+.nav-inline { display: none; }
+@media (min-width: 900px) {
+  .nav-inline { display: flex; align-items: center; gap: 1.4rem; margin-right: 1rem; }
+  .nav-inline a { font-size: var(--step--1); color: var(--ink); }
+  .nav-inline a[aria-current="page"] { color: var(--rose); }
+}
+
+.nav-scrim {
+  position: fixed; inset: 0; z-index: 80;
+  background: color-mix(in srgb, var(--plum) 45%, transparent);
+  opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease);
+}
+.nav-scrim.is-open { opacity: 1; pointer-events: auto; }
+
+.nav-drawer {
+  position: fixed; top: 0; left: 0; bottom: 0; z-index: 90;
+  width: min(320px, 86vw);
+  background: var(--porcelain); border-right: 1px solid var(--line);
+  transform: translateX(-102%); visibility: hidden;
+  transition: transform 0.3s var(--ease), visibility 0s linear 0.3s;
+  display: flex; flex-direction: column;
+}
+.nav-drawer.is-open { transform: none; visibility: visible; transition-delay: 0s; }
+.nav-drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem var(--gutter); border-bottom: 1px solid var(--line); }
+.nav-drawer__links { display: flex; flex-direction: column; padding: 0.4rem var(--gutter); overflow-y: auto; flex: 1; }
+.nav-drawer__links a { padding: 0.95rem 0; border-bottom: 1px solid var(--line); font-size: 1.05rem; color: var(--ink); }
+.nav-drawer__links a[aria-current="page"] { color: var(--rose); font-weight: 700; }
+.nav-drawer__foot { border-top: 1px solid var(--line); background: var(--shell); padding: 1rem var(--gutter) calc(1rem + env(safe-area-inset-bottom)); }
+
+/* ===========================================================
+   Category strip (sticky, one scrolling row of pills) and the
+   product feed: 2 columns on a phone, 3 from 560px, 4 from 900px.
+   =========================================================== */
+
+.switch, .chips { scrollbar-width: none; -ms-overflow-style: none; }
+.switch::-webkit-scrollbar, .chips::-webkit-scrollbar { display: none; }
+.switch__btn, .chip { transition: background-color 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease); }
+.switch__btn.is-active, .chip.is-active { font-weight: 700; }
+
+.page-title { font-size: var(--step-2); margin: 1.1rem 0 0.3rem; }
+.page-lead { font-size: var(--step--1); color: var(--ink-soft); margin: 0 0 0.9rem; }
+.feed-count { font-size: var(--step--1); color: var(--ink-soft); margin: 0 0 0.6rem; }
+
+.product-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm, 0.75rem);
+}
+.product-grid > * { min-width: 0; }
+@media (min-width: 560px) {
+  .product-grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-md, 1rem); }
+}
+@media (min-width: 900px) {
+  .product-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.pdp__related .product-grid { margin-top: 1rem; }

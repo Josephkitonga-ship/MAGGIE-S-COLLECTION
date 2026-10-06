@@ -4,7 +4,7 @@
 -- Safe to run again.
 --
 -- Products are now filed in two levels:
---   department  women | men | kids | shoes | bags | accessories
+--   department  women | men | kids | unisex | shoes | bags | accessories | home
 --   category    the type: dresses, tops, trousers, sandals, handbags ...
 --
 -- Products you already have are moved over like this (staff can
@@ -53,6 +53,6 @@ alter table public.products alter column department set not null;
 
 alter table public.products drop constraint if exists products_department_check;
 alter table public.products add constraint products_department_check
-  check (department in ('women', 'men', 'kids', 'shoes', 'bags', 'accessories'));
+  check (department in ('women', 'men', 'kids', 'unisex', 'shoes', 'bags', 'accessories', 'home'));
 
 create index if not exists products_department_idx on public.products (department);

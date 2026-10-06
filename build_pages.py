@@ -16,6 +16,7 @@ Edit this file, never the generated HTML — a rebuild overwrites them.
 """
 
 import os
+import time
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -25,6 +26,9 @@ NAV_ITEMS = [
     ("delivery.html", "Delivery &amp; Holds"),
     ("size-guide.html", "Size Guide"),
 ]
+
+# changes every build, so phones fetch fresh scripts instead of an old cached copy
+VERSION = time.strftime("%Y%m%d%H%M")
 
 SUPABASE_CDN = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 
@@ -71,8 +75,8 @@ SHELL = """<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{{PREFIX}}css/styles.css">
-<link rel="stylesheet" href="{{PREFIX}}css/stores.css">
+<link rel="stylesheet" href="{{PREFIX}}css/styles.css?v={{VERSION}}">
+<link rel="stylesheet" href="{{PREFIX}}css/stores.css?v={{VERSION}}">
 {{EXTRA_HEAD}}
 </head>
 <body>
@@ -80,23 +84,41 @@ SHELL = """<!doctype html>
 
 <header class="site-head">
   <div class="wrap site-head__bar">
+    <button class="icon-btn menu-trigger" id="burger" type="button" aria-label="Toggle Navigation" aria-expanded="false" aria-controls="navDrawer">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
     <a class="brand" href="{{PREFIX}}index.html">
       <span class="brand__name">Maggie's Collection</span>
       <span class="brand__note">Kimana Town</span>
     </a>
-    <nav class="nav" id="nav" aria-label="Main">
+    <nav class="nav-inline" aria-label="Main">
 {{NAV}}
     </nav>
     <div class="head-tools">
       <div class="social social--head">{{SOCIAL_HEAD}}</div>
-      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
-      <button class="icon-btn js-cart-open" type="button" aria-label="Open your saved items">
-        Saved <span class="cart-count">0</span>
+      <button class="icon-btn cart-btn js-cart-open" type="button" aria-label="Open your saved items">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+        <span class="cart-count" hidden>0</span>
       </button>
-      <button class="icon-btn burger" id="burger" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
     </div>
   </div>
 </header>
+
+<div class="nav-scrim" id="navScrim"></div>
+<aside class="nav-drawer" id="navDrawer" aria-label="Navigation">
+  <div class="nav-drawer__head">
+    <span class="brand__name">Maggie's Collection</span>
+    <button class="icon-btn menu-trigger" id="navClose" type="button" aria-label="Close navigation">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <nav class="nav-drawer__links" id="nav" aria-label="Main">
+{{NAV}}
+  </nav>
+  <div class="nav-drawer__foot">
+    <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch to dark theme" aria-pressed="false">🌙 Dark</button>
+  </div>
+</aside>
 
 <main id="main">
 {{BODY}}
@@ -117,7 +139,9 @@ SHELL = """<!doctype html>
           <li><a href="{{PREFIX}}catalogue.html?d=women">Women</a></li>
           <li><a href="{{PREFIX}}catalogue.html?d=men">Men</a></li>
           <li><a href="{{PREFIX}}catalogue.html?d=kids">Kids &amp; teens</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?d=unisex">Unisex</a></li>
           <li><a href="{{PREFIX}}catalogue.html?d=shoes">Shoes</a></li>
+          <li><a href="{{PREFIX}}catalogue.html?d=home">Home &amp; Living</a></li>
           <li><a href="{{PREFIX}}catalogue.html?new=1">New arrivals</a></li>
           <li><a href="{{PREFIX}}catalogue.html?offers=1">On offer</a></li>
         </ul>
@@ -184,11 +208,11 @@ SHELL = """<!doctype html>
 </section>
 
 <script src="{{SUPABASE_CDN}}"></script>
-<script src="{{PREFIX}}js/theme.js"></script>
-<script src="{{PREFIX}}js/config.js"></script>
-<script src="{{PREFIX}}js/orders.js"></script>
-<script src="{{PREFIX}}js/faq.js"></script>
-<script src="{{PREFIX}}js/script.js"></script>
+<script src="{{PREFIX}}js/theme.js?v={{VERSION}}"></script>
+<script src="{{PREFIX}}js/config.js?v={{VERSION}}"></script>
+<script src="{{PREFIX}}js/orders.js?v={{VERSION}}"></script>
+<script src="{{PREFIX}}js/faq.js?v={{VERSION}}"></script>
+<script src="{{PREFIX}}js/script.js?v={{VERSION}}"></script>
 </body>
 </html>
 """
@@ -276,9 +300,11 @@ INDEX_BODY = """
       <a class="card" href="catalogue.html?d=women"><div class="card__body"><h3 class="card__name">Women</h3><p class="card__desc">Dresses, tops, skirts, African wear.</p></div></a>
       <a class="card" href="catalogue.html?d=men"><div class="card__body"><h3 class="card__name">Men</h3><p class="card__desc">Shirts, trousers, jackets, suits.</p></div></a>
       <a class="card" href="catalogue.html?d=kids"><div class="card__body"><h3 class="card__name">Kids &amp; teens</h3><p class="card__desc">Everyday and occasion outfits.</p></div></a>
+      <a class="card" href="catalogue.html?d=unisex"><div class="card__body"><h3 class="card__name">Unisex</h3><p class="card__desc">Pieces anyone can wear.</p></div></a>
       <a class="card" href="catalogue.html?d=shoes"><div class="card__body"><h3 class="card__name">Shoes</h3><p class="card__desc">Sandals, heels, flats, sneakers.</p></div></a>
       <a class="card" href="catalogue.html?d=bags"><div class="card__body"><h3 class="card__name">Bags</h3><p class="card__desc">Handbags, backpacks, travel.</p></div></a>
       <a class="card" href="catalogue.html?d=accessories"><div class="card__body"><h3 class="card__name">Accessories</h3><p class="card__desc">Jewellery, belts, scarves, caps.</p></div></a>
+      <a class="card" href="catalogue.html?d=home"><div class="card__body"><h3 class="card__name">Home &amp; Living</h3><p class="card__desc">Bedding, curtains, kitchen, towels.</p></div></a>
     </div>
   </div>
 </section>
@@ -296,16 +322,16 @@ INDEX_BODY = """
 """
 
 CATALOGUE_BODY = """
-<section class="section--tight">
-  <div class="wrap">
-    <h1 style="margin-top:1.5rem">The rail today</h1>
-    <p>Everything below is in the shop right now. Pick a department, then a type, or tap New arrivals or On offer. Tap a piece to see it in full, pick a size, save it to your list, and send us one WhatsApp message to hold it.</p>
-  </div>
+<section class="section--tight catalogue-page">
   <div class="filters">
     <div class="wrap">
-      <div class="switch" id="storeSwitch"></div>
-      <div class="chips" id="chips"></div>
+      <div class="switch" id="storeSwitch" aria-label="Departments"></div>
+      <div class="chips" id="chips" aria-label="Types"></div>
     </div>
+  </div>
+  <div class="wrap">
+    <h1 class="page-title">The rail today</h1>
+    <p class="page-lead">Everything below is in the shop right now. Tap a piece to see it in full, pick a size, save it to your list, and send us one WhatsApp message to hold it.</p>
   </div>
   <div class="wrap" id="catalogue">
     <div class="state">Loading the rail…</div>
@@ -599,7 +625,6 @@ def build_nav(current, prefix):
     for href, label in NAV_ITEMS:
         mark = ' aria-current="page"' if href == current else ""
         lines.append('      <a href="%s%s"%s>%s</a>' % (prefix, href, mark, label))
-    lines.append('      <a href="#saved" data-open-saved>Saved Items</a>')
     return "\n".join(lines)
 
 
@@ -616,6 +641,7 @@ def render(page):
     html = html.replace("{{BODY}}", page["body"].strip())
     html = html.replace("{{PREFIX}}", prefix)
     html = html.replace("{{SUPABASE_CDN}}", SUPABASE_CDN)
+    html = html.replace("{{VERSION}}", VERSION)
     return html
 
 

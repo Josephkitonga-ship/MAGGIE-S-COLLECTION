@@ -176,7 +176,8 @@
   }
 
   function paintCount() {
-    $$(".cart-count").forEach((el) => { el.textContent = cartCount(); });
+    const n = cartCount();
+    $$(".cart-count").forEach((el) => { el.textContent = n; el.hidden = n === 0; });
   }
 
   function addToCart(productId, size) {
@@ -276,14 +277,19 @@
 
   /* --- product cards -------------------------------------------- */
 
+  /* price first, then the discount pill beside it and the marked price struck through.
+     The marked-price line is always there (empty when there is no discount), so every
+     card keeps exactly the same height. */
   function priceHTML(product) {
     const pct = ORD.discountPct(product.price, product.compare_price);
-    if (!pct) return `<span class="card__price"><span class="price-now">${money(product.price)}</span></span>`;
-    return `<span class="card__price is-sale">
-      <span class="price-now">${money(product.price)}</span>
-      <s class="price-was">${money(product.compare_price)}</s>
-      <span class="price-save">Save ${money(ORD.saving(product.price, product.compare_price))}</span>
-    </span>`;
+    return `
+      <div class="card__priceline">
+        <span class="price-now${pct ? " is-sale" : ""}">${money(product.price)}</span>
+        ${pct ? `<span class="badge badge--off">−${pct}%</span>` : ""}
+      </div>
+      ${pct
+        ? `<s class="price-was">${money(product.compare_price)}</s>`
+        : '<span class="price-was price-was--empty" aria-hidden="true">&nbsp;</span>'}`;
   }
 
   function productUrl(id) {
@@ -292,7 +298,6 @@
 
   function cardHTML(product) {
     const store = storeOf(product.store);
-    const pct = ORD.discountPct(product.price, product.compare_price);
     const marks = ORD.highlights(product);
     const sizes = Array.isArray(product.sizes) ? product.sizes : [];
     const link = productUrl(product.id);
@@ -302,21 +307,19 @@
          </select>`
       : "";
     return `
-      <article class="card" data-store="${esc(store.slug)}">
+      <article class="card card--product" data-store="${esc(store.slug)}">
         <a class="card__media" href="${link}" aria-label="View ${esc(product.name)}">
           ${product.image_url ? `<img src="${esc(product.image_url)}" alt="${esc(product.name)}" loading="lazy">` : ""}
-          ${pct ? `<span class="badge badge--off">−${pct}%</span>` : ""}
           ${marks.length ? `<span class="badge badge--hot">${esc(marks[0])}</span>` : ""}
         </a>
         <div class="card__body">
-          <p class="card__cat">${esc(deptName(product.department))} · ${esc(categoryName(product.category))}</p>
+          ${priceHTML(product)}
           <h3 class="card__name"><a href="${link}">${esc(product.name)}</a></h3>
-          ${product.description ? `<p class="card__desc">${esc(product.description)}</p>` : ""}
-          ${picker ? `<label class="field" style="margin:0.4rem 0 0"><span>Size</span>${picker}</label>` : ""}
-          <div class="card__foot">
-            ${priceHTML(product)}
-            <button class="btn btn--rose js-add" type="button" data-id="${esc(product.id)}">Save to Rail List</button>
-          </div>
+          <p class="card__cat">${esc(deptName(product.department))} · ${esc(categoryName(product.category))}</p>
+          ${picker
+            ? `<label class="field card__size"><span class="sr-only">Size</span>${picker}</label>`
+            : '<div class="card__size card__size--empty" aria-hidden="true"></div>'}
+          <button class="btn btn--rose js-add" type="button" data-id="${esc(product.id)}">Save to Rail List</button>
         </div>
       </article>`;
   }
@@ -375,6 +378,8 @@
       btn("data-offers", view.offers, "On offer");
   }
 
+  /* One product feed. Tapping a department (or a type, New arrivals, On offer)
+     filters it in place, with no reload and no sections to scroll past. */
   function paintCatalogue() {
     const wrap = $("#catalogue");
     if (!wrap) return;
@@ -393,9 +398,10 @@
     });
     if (view.cat !== "all" && !used.some((u) => u.slug === view.cat)) view.cat = "all";
 
+    /* a second row of type chips appears once a department (or type) is chosen */
     const chips = $("#chips");
     if (chips) {
-      chips.innerHTML = used.length > 1
+      chips.innerHTML = used.length > 1 && (view.dept !== "all" || view.cat !== "all")
         ? [{ slug: "all", name: "Everything" }].concat(used).map((t) =>
             `<button class="chip${t.slug === view.cat ? " is-active" : ""}" type="button" data-slug="${esc(t.slug)}">${esc(t.name)}</button>`
           ).join("")
@@ -415,48 +421,10 @@
       return;
     }
 
-    const filtered = view.cat === "all" ? items : items.filter((p) => p.category === view.cat);
-    let groups;
-    if (view.dept === "all") {
-      /* every department, each with its own heading */
-      groups = DEPTS.map((d) => ({ id: "dept-" + d.slug, title: d.name, list: filtered.filter((p) => p.department === d.slug) }));
-    } else {
-      /* one department, split by type */
-      const dep = DEPTS.find((d) => d.slug === view.dept);
-      const known = dep.types.map((t) => t.slug);
-      groups = dep.types.map((t) => ({ id: "cat-" + t.slug, title: t.name, list: filtered.filter((p) => p.category === t.slug) }));
-      groups.push({ id: "cat-other", title: "More", list: filtered.filter((p) => known.indexOf(p.category) === -1) });
-    }
-    groups = groups.filter((g) => g.list.length);
-
-    wrap.innerHTML = groups.map((g) => `
-      <section class="cat-block" id="${esc(g.id)}">
-        <div class="cat-block__head">
-          <h2>${esc(g.title)}</h2>
-          <span class="cat-block__count">${g.list.length} ${g.list.length === 1 ? "piece" : "pieces"}</span>
-        </div>
-        <div class="grid">${g.list.map(cardHTML).join("")}</div>
-      </section>`).join("");
-
-    spyCategories();
-  }
-
-  let spy = null;
-  /* Scroll-spy keeps the type chip in step with the section you are in. */
-  function spyCategories() {
-    const blocks = $$('.cat-block[id^="cat-"]');
-    if (spy) spy.disconnect();
-    if (!blocks.length || !window.IntersectionObserver) return;
-    spy = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const slug = entry.target.id.replace("cat-", "");
-        $$(".chip").forEach((chip) => {
-          chip.classList.toggle("is-active", chip.dataset.slug === slug);
-        });
-      });
-    }, { rootMargin: "-40% 0px -55% 0px" });
-    blocks.forEach((block) => spy.observe(block));
+    const feed = view.cat === "all" ? items : items.filter((p) => p.category === view.cat);
+    wrap.innerHTML = `
+      <p class="feed-count">${feed.length} ${feed.length === 1 ? "piece" : "pieces"}</p>
+      <div class="product-grid">${feed.map(cardHTML).join("")}</div>`;
   }
 
   /* --- checkout -------------------------------------------------- */
@@ -681,7 +649,7 @@
       ${related.length ? `
       <section class="pdp__related">
         <h2>More ${esc(categoryName(p.category).toLowerCase())}</h2>
-        <div class="grid">${related.map(cardHTML).join("")}</div>
+        <div class="product-grid">${related.map(cardHTML).join("")}</div>
       </section>` : ""}`;
 
     const note = (text, good) => {
@@ -874,14 +842,21 @@
   /* --- boot --------------------------------------------------------- */
 
   async function boot() {
+    /* slide-out navigation: the hamburger opens it, the scrim, the X, a link or Escape closes it */
     const burger = $("#burger");
-    if (burger) {
-      burger.addEventListener("click", () => {
-        const nav = $("#nav");
-        const open = nav.classList.toggle("is-open");
-        burger.setAttribute("aria-expanded", String(open));
-      });
+    const navDrawer = $("#navDrawer");
+    const navScrim = $("#navScrim");
+    function setNav(open) {
+      if (!navDrawer) return;
+      navDrawer.classList.toggle("is-open", open);
+      if (navScrim) navScrim.classList.toggle("is-open", open);
+      document.body.classList.toggle("is-locked", open);
+      if (burger) burger.setAttribute("aria-expanded", String(open));
     }
+    if (burger) burger.addEventListener("click", () => setNav(!navDrawer.classList.contains("is-open")));
+    if ($("#navClose")) $("#navClose").addEventListener("click", () => setNav(false));
+    if (navScrim) navScrim.addEventListener("click", () => setNav(false));
+    if ($("#nav")) $("#nav").addEventListener("click", (event) => { if (event.target.closest("a")) setNav(false); });
 
     $$(".js-cart-open").forEach((btn) => btn.addEventListener("click", openDrawer));
     $$("[data-open-saved]").forEach((link) => link.addEventListener("click", (event) => {
@@ -893,7 +868,7 @@
     if ($("#cartClose")) $("#cartClose").addEventListener("click", closeDrawer);
     if (scrim) scrim.addEventListener("click", closeDrawer);
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closeDrawer();
+      if (event.key === "Escape") { closeDrawer(); if ($("#navDrawer")) { $("#navDrawer").classList.remove("is-open"); if ($("#navScrim")) $("#navScrim").classList.remove("is-open"); } }
     });
 
     /* One delegated listener covers every card on every page,
