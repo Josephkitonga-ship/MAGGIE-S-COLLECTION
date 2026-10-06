@@ -154,7 +154,8 @@
 a.card__media { display: block; color: inherit; }
 .card__name a { color: inherit; }
 .card__name a:hover { color: var(--rose); }
-.card__media .badge--hot { top: auto; bottom: 0.7rem; left: 0.7rem; background: var(--hot); }
+/* NEW / BEST DEAL: a white pill in the top-left corner of the photo */
+.card__media .badge--hot { top: 0.6rem; bottom: auto; left: 0.6rem; background: var(--white); color: var(--hot); box-shadow: 0 2px 8px -3px rgba(0,0,0,0.35); }
 
 .badge--ok { background: var(--ok); }
 .badge--hot-solid { background: var(--hot); }
@@ -244,9 +245,9 @@ a.card__media { display: block; color: inherit; }
   .grid { gap: 0.8rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); }
 }
 
-.card--product { border-radius: 14px; height: 100%; }
+.card--product { border-radius: 18px; height: 100%; }
 .card--product .card__media { aspect-ratio: 4 / 3; flex: 0 0 auto; overflow: hidden; }
-.card--product .card__body { padding: 0.6rem 0.65rem 0.7rem; gap: 0; flex: 1; }
+.card--product .card__body { padding: 0.75rem 0.8rem 0.85rem; gap: 0; flex: 1; }
 
 /* The photo is pinned inside the 4:3 box. Before, a tall photo made the box
    grow to the photo's own shape (a percentage height does not work inside a

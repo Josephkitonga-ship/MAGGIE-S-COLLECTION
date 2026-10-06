@@ -294,7 +294,12 @@ p { margin: 0 0 1em; max-width: 66ch; }
 
 /* ---------------- product card ---------------- */
 
+/* position: relative is what keeps the visually-hidden "Size" label inside its
+   card. Without it that 1px label is placed against the whole page, outside
+   the scrolling "New on the rail" strip, and stretches the page about 3x wider
+   than the screen. That was the squeezed-into-the-left-side bug. */
 .card {
+  position: relative;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius-m);
