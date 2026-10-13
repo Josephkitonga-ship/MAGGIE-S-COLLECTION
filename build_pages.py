@@ -250,7 +250,7 @@ INDEX_BODY = """
         <p>Dresses, tops, African wear and more.</p>
         <span class="boutique__go">Shop women&rsquo;s</span>
       </a>
-      <a class="boutique boutique--davids" href="catalogue.html?d=men">
+      <a class="boutique boutique--teal" href="catalogue.html?d=men">
         <img class="boutique__photo" src="images/men.jpg" alt="" loading="lazy" onerror="this.remove()">
         <h3>Men</h3>
         <p>Shirts, trousers, jackets and suits.</p>

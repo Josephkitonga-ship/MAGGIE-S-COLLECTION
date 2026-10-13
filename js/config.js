@@ -8,8 +8,7 @@ const SUPABASE_URL = "https://einuzgxchmxwxisrrkyn.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpbnV6Z3hjaG14d3hpc3Jya3luIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MTE1NDAsImV4cCI6MjEwNTQ4NzU0MH0.MvG8G4sXd8809J2rGA-d1RZghewEDC7pFdNlo_Rj3Rg";
 
 /* ---- WhatsApp -------------------------------------------------
-   One line for BOTH boutiques. Orders are told apart by the store
-   heading inside the message, and by store in the database.
+   One WhatsApp line for the shop. Every order carries its own reference.
    Full international form, digits only, no "+", no spaces.
 ---------------------------------------------------------------- */
 const WHATSAPP_NUMBER = "254708155891";
@@ -42,15 +41,15 @@ const SHOP = {
   town: "Kimana Town",
   email: "hello@maggiescollection.co.ke",
 
-  /* ---- the two boutiques ----------------------------------------
+  /* ---- the store -------------------------------------------------
+     One store. Kept as a list because the database and order code
+     logic are written that way.
      slug    stored on every product and order; never rename it later
      name    full name, shown in headings and WhatsApp
-     short   shown on the small badge on each product card
-     prefix  order codes: MC-260929-4412, DB-260929-1187
+     prefix  order codes: MC-260929-4412
                                                                      */
   stores: [
-    { slug: "maggies", name: "Maggie's Collection", short: "Maggie's", prefix: "MC" },
-    { slug: "davids",  name: "David's Boutique",    short: "David's",  prefix: "DB" }
+    { slug: "maggies", name: "Maggie's Collection", short: "Maggie's", prefix: "MC" }
   ],
 
   /* ---- social buttons --------------------------------------------

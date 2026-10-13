@@ -9,8 +9,7 @@ function ok(label, condition) {
 }
 
 const stores = [
-  { slug: "maggies", name: "Maggie's Collection", prefix: "MC" },
-  { slug: "davids", name: "David's Boutique", prefix: "DB" }
+  { slug: "maggies", name: "Maggie's Collection", prefix: "MC" }
 ];
 const fmt = (n) => "KSh " + Number(n).toLocaleString("en-KE");
 
@@ -22,48 +21,36 @@ ok("compare below price is ignored", O.discountPct(800, 500) === 0);
 ok("compare equal is ignored", O.discountPct(800, 800) === 0);
 ok("saving", O.saving(800, 1000) === 200 && O.saving(800, null) === 0);
 
-/* --- grouping ---------------------------------------------------- */
+/* --- grouping: one store ------------------------------------------------ */
 const cart = [
-  { store: "davids", name: "Camo sweatshirt", price: 2500, qty: 1, size: "L" },
+  { store: "maggies", name: "Camo sweatshirt", price: 2500, qty: 1, size: "L" },
   { store: "maggies", name: "Wrap dress", price: 3200, qty: 2, size: "M" },
-  { name: "Old cart line with no store", price: 1000, qty: 1, size: "" }
+  { name: "Old cart line with no store", price: 1000, qty: 1, size: "" },
+  { store: "retired-store", name: "Line from a store that no longer exists", price: 500, qty: 1, size: "" }
 ];
 const groups = O.groupByStore(cart, stores);
-ok("two groups", groups.length === 2);
-ok("store order follows config, not cart order", groups[0].store.slug === "maggies");
-ok("legacy line joins first boutique", groups[0].lines.length === 2);
-ok("subtotal", groups[0].subtotal === 3200 * 2 + 1000 && groups[1].subtotal === 2500);
-ok("single-store cart makes one group", O.groupByStore([cart[1]], stores).length === 1);
+ok("everything lands in one group", groups.length === 1 && groups[0].store.slug === "maggies");
+ok("no line is dropped (missing or retired store joins the store)", groups[0].lines.length === 4);
+ok("subtotal", groups[0].subtotal === 2500 + 3200 * 2 + 1000 + 500);
+ok("single line still makes one group", O.groupByStore([cart[1]], stores).length === 1);
+ok("empty cart makes no groups", O.groupByStore([], stores).length === 0);
 
 /* --- codes ----------------------------------------------------------- */
-const code = O.makeCode("DB", new Date(2026, 8, 29, 10, 0, 0), 0.5);
-ok("code shape", /^DB-[0-9]{6}-[0-9]{4}$/.test(code) && code.indexOf("DB-260929-") === 0);
+const code = O.makeCode("MC", new Date(2026, 8, 29, 10, 0, 0), 0.5);
+ok("code shape", /^MC-[0-9]{6}-[0-9]{4}$/.test(code) && code.indexOf("MC-260929-") === 0);
 ok("random codes match the database regex", /^MC-[0-9]{6}-[0-9]{4}$/.test(O.makeCode("MC")));
 
-/* --- message: one group ------------------------------------------------- */
+/* --- message ---------------------------------------------------------------- */
 const details = { name: "Wanjiru", phone: "0712345678", location: "Zawadi Hotel stage", notes: "", zone: "Kimana Town centre", fee: 0 };
-const one = [{ store: stores[0], code: "MC-260929-4412", lines: groups[0].lines.slice(0, 1), subtotal: 6400 }];
+const one = [{ store: stores[0], code: "MC-260929-4412", lines: groups[0].lines.slice(0, 2), subtotal: 6400 }];
 const m1 = O.buildMessage(one, Object.assign({ total: 6400 }, details), fmt);
-ok("single: opens as an enquiry", m1.indexOf("Hello! I would like to check availability and reserve these items from my saved list:") === 0);
-ok("single: ref + store at the end for the shop", m1.indexOf("Ref: MC-260929-4412 · Maggie's Collection") !== -1);
-ok("single: no second section", m1.indexOf("David") === -1 && m1.indexOf("*") === -1);
-ok("single: estimated total, not 'total to pay'", m1.indexOf("Estimated total: KSh 6,400") !== -1 && m1.indexOf("to pay") === -1);
-ok("single: free delivery worded", m1.indexOf("Delivery (Kimana Town centre): free") !== -1);
-ok("single: customer details", m1.indexOf("Name: Wanjiru") !== -1 && m1.indexOf("Deliver / collect: Zawadi Hotel stage") !== -1);
-
-/* --- message: two groups ------------------------------------------------------ */
-const two = [
-  { store: stores[0], code: "MC-260929-4412", lines: groups[0].lines, subtotal: groups[0].subtotal },
-  { store: stores[1], code: "DB-260929-1187", lines: groups[1].lines, subtotal: groups[1].subtotal }
-];
-const m2 = O.buildMessage(two, Object.assign({}, details, { zone: "Oloitokitok, Illasit, Entarara", fee: 250, total: 6400 + 1000 + 2500 + 250 }), fmt);
-ok("mixed: same enquiry opening", m2.indexOf("Hello! I would like to check availability") === 0);
-ok("mixed: a labelled section per group", m2.indexOf("*MAGGIE'S COLLECTION*") !== -1 && m2.indexOf("*DAVID'S BOUTIQUE*") !== -1);
-ok("mixed: David's item sits under David's heading", m2.indexOf("*DAVID'S BOUTIQUE*") < m2.indexOf("Camo sweatshirt"));
-ok("mixed: Maggie's item sits above David's heading", m2.indexOf("Wrap dress") < m2.indexOf("*DAVID'S BOUTIQUE*"));
-ok("mixed: each section carries its ref", m2.indexOf("Ref: MC-260929-4412") !== -1 && m2.indexOf("Ref: DB-260929-1187") !== -1);
-ok("mixed: delivery shown once", m2.split("Delivery (").length === 2);
-ok("mixed: estimated grand total", m2.indexOf("*Estimated total: " + fmt(10150) + "*") !== -1);
+ok("opens as an enquiry", m1.indexOf("Hello! I would like to check availability and reserve these items from my saved list:") === 0);
+ok("ref + store at the end for the shop", m1.indexOf("Ref: MC-260929-4412 \u00b7 Maggie's Collection") !== -1);
+ok("no section headings", m1.indexOf("*") === -1);
+ok("never mentions another store", !/david|DB-/i.test(m1));
+ok("estimated total, not 'total to pay'", m1.indexOf("Estimated total: KSh 6,400") !== -1 && m1.indexOf("to pay") === -1);
+ok("free delivery worded", m1.indexOf("Delivery (Kimana Town centre): free") !== -1);
+ok("customer details", m1.indexOf("Name: Wanjiru") !== -1 && m1.indexOf("Deliver / collect: Zawadi Hotel stage") !== -1);
 
 /* --- one item from its own page ------------------------------------------------ */
 const item = O.buildItemMessage({ name: "Pull neck", price: 2650 }, "L", fmt, "https://x.test/product.html?id=1");

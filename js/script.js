@@ -4,8 +4,8 @@
    orders.js and faq.js. Nothing here assumes a page's markup
    exists; each block bails quietly if its hooks are missing.
 
-   Two boutiques share one catalogue. Every product carries a
-   `store` and an optional `compare_price` (the marked price).
+   One store, one catalogue. Every product carries an optional
+   `compare_price` (the marked price).
    =========================================================== */
 
 (function () {
@@ -44,17 +44,16 @@
     { id: "d3", store: "maggies", department: "women", name: "Linen shell top", price: 1450, category: "tops", description: "Breathes through a Kimana afternoon.", image_url: "", sizes: ["S", "M", "L", "XL", "XXL", "3XL"], active: true, sort: 3 },
     { id: "d6", store: "maggies", department: "women", name: "Kitenge circle skirt", price: 2400, category: "african", description: "Cut and sewn by our tailor.", image_url: "", sizes: ["One size"], active: true, sort: 6 },
     { id: "d7", store: "maggies", department: "bags", name: "Everyday tote", price: 1950, category: "handbags", description: "Fits a laptop and a market run.", image_url: "", sizes: ["Small", "Medium", "Large"], active: true, sort: 7 },
-    { id: "d9", store: "davids", department: "men", name: "Oxford shirt", price: 2200, compare_price: 2750, category: "tops", description: "Cotton, holds a collar all day.", image_url: "", sizes: ["M", "L", "XL", "XXL", "3XL"], active: true, sort: 9 },
-    { id: "d10", store: "davids", department: "men", name: "Chino trouser", price: 2800, category: "trousers", description: "Straight leg, numbered waist.", image_url: "", sizes: ["30", "32", "34", "36", "38", "40"], active: true, sort: 10 },
-    { id: "d12", store: "davids", department: "men", name: "Camo crew sweatshirt", price: 2600, compare_price: 3500, category: "sweatshirts", description: "Heavy fleece, embroidered chest.", image_url: "", sizes: ["M", "L", "XL", "XXL"], active: true, sort: 12 },
+    { id: "d9", store: "maggies", department: "men", name: "Oxford shirt", price: 2200, compare_price: 2750, category: "tops", description: "Cotton, holds a collar all day.", image_url: "", sizes: ["M", "L", "XL", "XXL", "3XL"], active: true, sort: 9 },
+    { id: "d10", store: "maggies", department: "men", name: "Chino trouser", price: 2800, category: "trousers", description: "Straight leg, numbered waist.", image_url: "", sizes: ["30", "32", "34", "36", "38", "40"], active: true, sort: 10 },
+    { id: "d12", store: "maggies", department: "men", name: "Camo crew sweatshirt", price: 2600, compare_price: 3500, category: "sweatshirts", description: "Heavy fleece, embroidered chest.", image_url: "", sizes: ["M", "L", "XL", "XXL"], active: true, sort: 12 },
     { id: "d13", store: "maggies", department: "kids", name: "School-run polo", price: 900, category: "tops", description: "Soft cotton, easy wash.", image_url: "", sizes: ["4-5Y", "6-7Y", "8-9Y"], active: true, sort: 13 },
-    { id: "d8", store: "davids", department: "shoes", name: "Block heel sandal", price: 2900, category: "heels", description: "Steady on a murram road.", image_url: "", sizes: ["36", "37", "38", "39", "40"], active: true, sort: 8 }
+    { id: "d8", store: "maggies", department: "shoes", name: "Block heel sandal", price: 2900, category: "heels", description: "Steady on a murram road.", image_url: "", sizes: ["36", "37", "38", "39", "40"], active: true, sort: 8 }
   ];
 
   let PRODUCTS = [];
 
-  /* Older rows, or a database that has not had the two-store
-     migration yet, have no store: they belong to the first boutique. */
+  /* Rows with no store, or an old store name, belong to the one store. */
   const DEPTS = SHOP.departments;
 
   function normalise(p) {
@@ -79,6 +78,37 @@
       return [];
     }
     return (data || []).map(normalise);
+  }
+
+  /* --- availability ("sold out") ------------------------------------
+     product_availability says only whether a size is in stock, never how
+     many. A product with no rows there is not counted yet and is always
+     on sale. If the view is missing, nothing is ever shown as sold out. */
+
+  let AVAIL = new Map();   // product id -> Map(size -> in stock?)
+
+  async function loadAvailability() {
+    if (!sb) return;
+    const { data, error } = await sb.from("product_availability").select("product_id, size, in_stock");
+    if (error) return;
+    AVAIL = new Map();
+    (data || []).forEach((r) => {
+      const id = String(r.product_id);
+      if (!AVAIL.has(id)) AVAIL.set(id, new Map());
+      AVAIL.get(id).set(r.size || "", r.in_stock === true);
+    });
+  }
+
+  function sizeInStock(p, size) {
+    const have = AVAIL.get(String(p.id));
+    return !have || have.get(size || "") === true;
+  }
+
+  function soldOut(p) {
+    const have = AVAIL.get(String(p.id));
+    if (!have) return false;
+    const sizes = Array.isArray(p.sizes) && p.sizes.length ? p.sizes : [""];
+    return sizes.every((s) => have.get(s) !== true);
   }
 
   /* --- small helpers ------------------------------------------- */
@@ -182,7 +212,7 @@
 
   function addToCart(productId, size) {
     const live = PRODUCTS.find((p) => String(p.id) === String(productId));
-    if (!live) return;
+    if (!live || !sizeInStock(live, size)) return;
     const key = String(live.id) + "::" + (size || "");
     const existing = cart.find((line) => line.key === key);
     if (existing) {
@@ -297,20 +327,20 @@
   }
 
   function cardHTML(product) {
-    const store = storeOf(product.store);
     const marks = ORD.highlights(product);
+    const out = soldOut(product);
     const sizes = Array.isArray(product.sizes) ? product.sizes : [];
     const link = productUrl(product.id);
     const picker = sizes.length
       ? `<select class="js-size" aria-label="Size for ${esc(product.name)}">
-           ${sizes.map((s) => `<option value="${esc(s)}">${esc(s)}</option>`).join("")}
+           ${sizes.map((s) => `<option value="${esc(s)}"${sizeInStock(product, s) ? "" : " disabled"}>${esc(s)}${sizeInStock(product, s) ? "" : " (sold out)"}</option>`).join("")}
          </select>`
       : "";
     return `
-      <article class="card card--product" data-store="${esc(store.slug)}">
+      <article class="card card--product${out ? " is-soldout" : ""}">
         <a class="card__media" href="${link}" aria-label="View ${esc(product.name)}">
           ${product.image_url ? `<img src="${esc(product.image_url)}" alt="${esc(product.name)}" loading="lazy">` : ""}
-          ${marks.length ? `<span class="badge badge--hot">${esc(marks[0])}</span>` : ""}
+          ${out ? '<span class="badge badge--soldout">Sold out</span>' : marks.length ? `<span class="badge badge--hot">${esc(marks[0])}</span>` : ""}
         </a>
         <div class="card__body">
           ${priceHTML(product)}
@@ -319,7 +349,9 @@
           ${picker
             ? `<label class="field card__size"><span class="sr-only">Size</span>${picker}</label>`
             : '<div class="card__size card__size--empty" aria-hidden="true"></div>'}
-          <button class="btn btn--rose js-add" type="button" data-id="${esc(product.id)}">Save to Rail List</button>
+          ${out
+            ? '<button class="btn btn--ghost" type="button" disabled>Sold out</button>'
+            : `<button class="btn btn--rose js-add" type="button" data-id="${esc(product.id)}">Save to Rail List</button>`}
         </div>
       </article>`;
   }
@@ -333,23 +365,15 @@
       : '<div class="state">New pieces are being photographed. Check back shortly.</div>';
   }
 
-  function paintBoutiqueCounts() {
-    $$("[data-store-count]").forEach((el) => {
-      const n = PRODUCTS.filter((p) => p.store === el.dataset.storeCount).length;
-      el.textContent = n + (n === 1 ? " piece" : " pieces") + " on the rail";
-    });
-  }
-
   /* --- catalogue ------------------------------------------------ */
 
   /* dept: department slug | "all"    cat: type slug | "all"
-     store: kept for ?s= links, no buttons    offers / fresh: filters */
-  const view = { dept: "all", cat: "all", store: "all", offers: false, fresh: false };
+     offers / fresh: filters */
+  const view = { dept: "all", cat: "all", offers: false, fresh: false };
 
   function visibleProducts() {
     return PRODUCTS.filter((p) =>
       (view.dept === "all" || p.department === view.dept) &&
-      (view.store === "all" || p.store === view.store) &&
       (!view.offers || ORD.discountPct(p.price, p.compare_price) > 0) &&
       (!view.fresh || ORD.isFresh(p)));
   }
@@ -358,7 +382,6 @@
     const q = new URLSearchParams();
     if (view.dept !== "all") q.set("d", view.dept);
     if (view.cat !== "all") q.set("c", view.cat);
-    if (view.store !== "all") q.set("s", view.store);
     if (view.offers) q.set("offers", "1");
     if (view.fresh) q.set("new", "1");
     const text = q.toString();
@@ -453,7 +476,7 @@
     if (feeNote) {
       feeNote.textContent = fee === 0
         ? "Delivery is free on this order."
-        : "Delivery " + money(fee) + " on top of " + money(cartTotal()) + (ORD.groupByStore(cart, STORES).length > 1 ? ", charged once for everything in your selection." : ".");
+        : "Delivery " + money(fee) + " on top of " + money(cartTotal()) + ".";
     }
   }
 
@@ -482,7 +505,7 @@
       return;
     }
 
-    /* One group, and one order code, per boutique. */
+    /* One group and one order code. */
     const groups = ORD.groupByStore(cart, STORES).map((g) =>
       Object.assign({}, g, { code: ORD.makeCode(g.store.prefix) }));
     const codes = groups.map((g) => g.code);
@@ -594,6 +617,7 @@
     const hasDetail = !!(p.material || p.dimensions || p.care);
     const related = PRODUCTS.filter((x) => x.department === p.department && x.category === p.category && String(x.id) !== String(p.id)).slice(0, 4);
     let chosen = sizes.length === 1 ? sizes[0] : "";
+    const out = soldOut(p);
 
     root.innerHTML = `
       <nav class="crumbs" aria-label="Breadcrumb">
@@ -615,7 +639,7 @@
 
         <div class="pdp__info">
           <div class="pdp__badges">
-            <span class="badge badge--ok">AVAILABLE</span>
+            ${out ? '<span class="badge badge--soldout">SOLD OUT</span>' : '<span class="badge badge--ok">AVAILABLE</span>'}
             ${marks.map((m) => `<span class="badge badge--hot-solid">${esc(m)}</span>`).join("")}
           </div>
           <h1 class="pdp__title">${esc(p.name)}</h1>
@@ -629,14 +653,14 @@
           <fieldset class="pdp__sizes">
             <legend>Choose a size</legend>
             <div class="pdp__sizerow" id="pdpSizes">
-              ${sizes.map((s) => `<button type="button" class="size-btn${s === chosen ? " is-active" : ""}" data-size="${esc(s)}" aria-pressed="${s === chosen}">${esc(s)}</button>`).join("")}
+              ${sizes.map((s) => `<button type="button" class="size-btn${s === chosen ? " is-active" : ""}" data-size="${esc(s)}" aria-pressed="${s === chosen}"${sizeInStock(p, s) ? "" : ' disabled title="Sold out"'}>${esc(s)}</button>`).join("")}
             </div>
           </fieldset>` : ""}
 
-          <p class="form-msg" id="pdpMsg" role="status"></p>
+          <p class="form-msg${out ? " is-bad" : ""}" id="pdpMsg" role="status">${out ? "This piece is sold out for now. Ask us on WhatsApp when it is back." : ""}</p>
           <div class="pdp__actions">
-            <button class="btn btn--wa" id="pdpReserve" type="button">Chat to Reserve on WhatsApp</button>
-            <button class="btn btn--ghost" id="pdpSave" type="button">Save to Rail List</button>
+            <button class="btn btn--wa" id="pdpReserve" type="button"${out ? " disabled" : ""}>Chat to Reserve on WhatsApp</button>
+            <button class="btn btn--ghost" id="pdpSave" type="button"${out ? " disabled" : ""}>Save to Rail List</button>
           </div>
 
           <h2 class="pdp__h2">Item specifications</h2>
@@ -935,9 +959,9 @@
     paintCart();
 
     PRODUCTS = await loadProducts();
+    await loadAvailability();
     reconcileCart();
     paintRail();
-    paintBoutiqueCounts();
     paintProduct();
     paintCart();
     paintCheckout();
@@ -957,10 +981,8 @@
           if (old) { if (d === "all") d = old[0]; c = old[1]; } else { c = "all"; }
         }
       }
-      const st = q.get("s") || "all";
       view.dept = d;
       view.cat = c;
-      view.store = st === "all" || STORES.some((x) => x.slug === st) ? st : "all";
       view.offers = q.get("offers") === "1";
       view.fresh = q.get("new") === "1";
       paintCatalogue();
